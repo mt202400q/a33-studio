@@ -1,5 +1,9 @@
 [
   {
+    "releaseNotes": "<!--LANG:en-->\nA33 Studio 2.1.9\n\n- The sidebar now shows Chat, Image, Gallery, Translate, Files, Notes, Code and Agents for upgraded installs too.\n<!--LANG:zh-CN-->\nA33 Studio 2.1.9\n\n- 升级后的客户端左侧栏也会显示：对话、生图、图库、翻译、文件、笔记、代码工具、智能体。\n<!--LANG:END-->\n",
+    "version": "2.1.9"
+  },
+  {
     "releaseNotes": "<!--LANG:en-->\nA33 Studio 2.1.8\n\n- Image generation is now a conversation: describe a picture, then keep asking for changes.\n- New Gallery: generated images are saved by date to Documents/A33 Studio/图 and browsable in the app.\n- Enter your A33 key once and models, defaults and image generation are configured automatically.\n- In-app updates from a33.club.\n<!--LANG:zh-CN-->\nA33 Studio 2.1.8\n\n- 生图改为对话式：描述画面后可以连续追问修改。\n- 新增图库：生成的图片按日期保存到 文档/A33 Studio/图，可在应用内浏览。\n- 填一次 A33 Key，模型、默认设置和生图自动配置好。\n- 支持在客户端内一键更新。\n<!--LANG:END-->\n",
     "version": "2.1.8"
   }
