@@ -315,7 +315,7 @@ export default function VideoChatPage() {
 
         <div className="mx-auto w-full max-w-3xl px-6 pb-5">
           <div className="flex flex-col gap-2 rounded-xl border border-border p-3">
-            <Textarea
+            <Textarea.Input
               value={prompt}
               rows={2}
               placeholder={t('a33.video_chat.placeholder')}

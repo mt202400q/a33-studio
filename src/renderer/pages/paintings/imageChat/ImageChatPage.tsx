@@ -469,7 +469,7 @@ export default function ImageChatPage() {
                 ))}
               </div>
             )}
-            <Textarea
+            <Textarea.Input
               value={prompt}
               rows={2}
               placeholder={t(baseImage ? 'a33.image_chat.placeholder_edit' : 'a33.image_chat.placeholder_new')}
