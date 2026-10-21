@@ -18,7 +18,7 @@ jobs:
       - run: pnpm install
 
       - name: Build (x64 installer only)
-        run: pnpm build:win:x64 --publish never -c.win.target=nsis
+        run: pnpm build:win:x64 --publish never --config.win.target=nsis
         env:
           NODE_OPTIONS: --max-old-space-size=8192
 
