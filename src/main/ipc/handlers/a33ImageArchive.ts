@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises'
 import { pathToFileURL } from 'node:url'
 
-import { clipboard, nativeImage, shell } from 'electron'
+import { clipboard, ClipboardItem, nativeImage, shell } from 'electron'
 
 import { assertInsideArchive, getImageArchiveRoot, listArchivedImages } from '@main/ai/a33ImageArchive'
 import type { a33ImageArchiveRequestSchemas } from '@shared/ipc/schemas/a33ImageArchive'
@@ -28,7 +28,8 @@ export const a33ImageArchiveHandlers: IpcHandlersFor<typeof a33ImageArchiveReque
   'a33.image_archive.copy': async ({ path }) => {
     const image = nativeImage.createFromPath(assertInsideArchive(path))
     if (image.isEmpty()) return false
-    clipboard.writeImage(image)
+    const png = new Blob([new Uint8Array(image.toPNG())], { type: 'image/png' })
+    await clipboard.write([new ClipboardItem({ 'image/png': png })])
     return true
   }
 }
