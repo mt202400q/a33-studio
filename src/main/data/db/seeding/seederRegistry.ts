@@ -1,5 +1,6 @@
 import type { ISeeder } from '../types'
 import { A33ImageAssistantSeeder } from './seeders/a33ImageAssistantSeeder'
+import { A33SidebarLayoutSeeder } from './seeders/a33SidebarLayoutSeeder'
 import { BrowserCapabilityUpgradeSeeder } from './seeders/browserCapabilityUpgradeSeeder'
 import { BuiltinMcpServerSeeder } from './seeders/builtinMcpServerSeeder'
 import { CherryAiDefaultModelSeeder } from './seeders/cherryaiDefaultModelSeeder'
@@ -43,6 +44,7 @@ export const seeders: ISeeder[] = [
   new LongTextPastePreferenceUpgradeSeeder(),
   new WebSearchPreferenceUpgradeSeeder(),
   new SidebarShortcutMigrationSeeder(),
+  new A33SidebarLayoutSeeder(),
   new PreferenceSeeder(),
   new TranslateLanguageSeeder(),
   new LocalModelSeeder(),
