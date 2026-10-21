@@ -10,6 +10,7 @@
 import { type CompoundIcon } from '../types'
 import { MinTop3Icon } from './3min-top'
 import { Ai302Icon } from './302ai'
+import { A33Icon } from './a33'
 import { AbacusIcon } from './abacus'
 import { AiOnlyIcon } from './ai-only'
 import { AiStudioIcon } from './ai-studio'
@@ -176,6 +177,7 @@ import { ZhipuIcon } from './zhipu'
 
 export const PROVIDER_ICON_CATALOG = {
   '302ai': Ai302Icon,
+  a33: A33Icon,
   '3min-top': MinTop3Icon,
   abacus: AbacusIcon,
   'ai-only': AiOnlyIcon,

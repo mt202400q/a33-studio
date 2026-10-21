@@ -247,7 +247,7 @@ const AboutSettings: FC = () => {
             </button>
 
             <div className="flex min-h-18 flex-col items-start justify-center">
-              <div className="mb-1 text-lg font-bold text-foreground">Cherry Studio</div>
+              <div className="mb-1 text-lg font-bold text-foreground">A33 Studio</div>
               <div className="text-muted-foreground text-sm">{t('settings.about.description')}</div>
               <button
                 type="button"

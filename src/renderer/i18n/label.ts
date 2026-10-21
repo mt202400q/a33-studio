@@ -21,6 +21,7 @@ const getLabelKey = (keyMap: Record<string, string>, key: string, fallback?: str
 
 const providerKeyMap = {
   '302ai': 'provider.302ai',
+  a33: 'provider.a33',
   aihubmix: 'provider.aihubmix',
   alayanew: 'provider.alayanew',
   anthropic: 'provider.anthropic',

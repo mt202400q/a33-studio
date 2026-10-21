@@ -10,6 +10,7 @@ import { type ProviderIconKey } from './meta-catalog'
 
 export const PROVIDER_ICON_LOADERS = {
   '302ai': () => import('./302ai').then(({ Ai302Icon }) => Ai302Icon),
+  a33: () => import('./a33').then(({ A33Icon }) => A33Icon),
   '3min-top': () => import('./3min-top').then(({ MinTop3Icon }) => MinTop3Icon),
   abacus: () => import('./abacus').then(({ AbacusIcon }) => AbacusIcon),
   'ai-only': () => import('./ai-only').then(({ AiOnlyIcon }) => AiOnlyIcon),
