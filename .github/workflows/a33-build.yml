@@ -30,7 +30,7 @@ jobs:
         with:
           node-version-file: ".node-version"
 
-      - uses: pnpm/action-setup@v5
+      - uses: pnpm/action-setup@v6
 
       - name: Install Linux build deps
         if: runner.os == 'Linux'
