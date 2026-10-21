@@ -1,5 +1,6 @@
 import { dataApiService } from '@data/DataApiService'
 import { ENDPOINT_TYPE, MODALITY, type Model, MODEL_CAPABILITY, parseUniqueModelId } from '@shared/data/types/model'
+import { A33_VIDEO_MODEL_ID, getRawModelId } from '@shared/utils/model'
 
 import type { ModelOption } from '../types/paintingModel'
 
@@ -23,6 +24,8 @@ function canOutputImage(model: Model): boolean {
 }
 
 export function supportsImageGenerationEndpoint(model: Model): boolean {
+  // A33 build: the 生图 key's models are image models even when the bundled catalog doesn't know them.
+  if (model.providerId === 'a33-image') return !A33_VIDEO_MODEL_ID.test(getRawModelId(model))
   const hasImageEndpoint =
     model.endpointTypes?.some(
       (e) => e === ENDPOINT_TYPE.OPENAI_IMAGE_GENERATION || e === ENDPOINT_TYPE.OPENAI_IMAGE_EDIT

@@ -89,7 +89,20 @@ export const isTextToImageModel = (model: Model): boolean =>
   model.capabilities.includes(MODEL_CAPABILITY.IMAGE_GENERATION) &&
   !model.capabilities.includes(MODEL_CAPABILITY.REASONING)
 
+/**
+ * A33 build: a33.club serves image/video models the bundled catalog may not know yet (e.g. gpt-image-2.5),
+ * so anything synced from the A33 media providers, or named like a media model, is never a chat model.
+ */
+const A33_MEDIA_PROVIDER_IDS: ReadonlySet<string> = new Set(['a33-image', 'a33-video'])
+export const A33_MEDIA_MODEL_ID = /(^|[-_/.])(image|imagine|video|seedance|veo|sora|kling|jimeng)([-_/.]|$)/i
+export const A33_VIDEO_MODEL_ID = /(^|[-_/.])(video|seedance|veo|sora|kling)([-_/.]|$)/i
+
+const isA33MediaModel = (model: Model): boolean =>
+  A33_MEDIA_PROVIDER_IDS.has(model.providerId) ||
+  (model.providerId === 'a33' && A33_MEDIA_MODEL_ID.test(getRawModelId(model)))
+
 export const isNonChatModel = (model: Model): boolean =>
+  isA33MediaModel(model) ||
   endpointImpliedCapability(model.endpointTypes?.[0]) != null ||
   isEmbeddingModel(model) ||
   isRerankModel(model) ||
