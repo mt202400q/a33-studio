@@ -114,7 +114,8 @@ export const DEFAULT_ASSISTANT_SETTINGS: AssistantSettings = {
   maxToolCalls: 100,
   enableMaxToolCalls: true,
   enableWebSearch: false,
-  enableGenerateImage: false,
+  // A33 build: chat can draw out of the box (the generate_image tool still needs a 生图 key + model)
+  enableGenerateImage: true,
   customParameters: []
 }
 

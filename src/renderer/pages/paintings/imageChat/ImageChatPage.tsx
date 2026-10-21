@@ -1,21 +1,50 @@
-import { ImagePlus, Loader2, MessageSquarePlus, Send, Trash2, X } from 'lucide-react'
+import { useNavigate } from '@tanstack/react-router'
+import {
+  Copy,
+  Download,
+  FolderOpen,
+  ImagePlus,
+  Loader2,
+  MessageSquarePlus,
+  RefreshCw,
+  Send,
+  SlidersHorizontal,
+  Trash2,
+  X
+} from 'lucide-react'
 import { type ClipboardEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Button, EmptyState, PageHeader, Scrollbar, Switch, Textarea } from '@cherrystudio/ui'
+import {
+  Button,
+  EmptyState,
+  PageHeader,
+  Scrollbar,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Switch,
+  Textarea
+} from '@cherrystudio/ui'
 import { cn } from '@cherrystudio/ui/lib/utils'
 import { usePreference } from '@data/hooks/usePreference'
+import { useModels } from '@renderer/hooks/useModel'
 import { usePaintings } from '@renderer/hooks/usePaintings'
 import { toast } from '@renderer/services/toast'
 
 import { usePaintingProviderRuntime } from '../hooks/usePaintingProviderRuntime'
 import { generatePainting } from '../model/generatePainting'
+import { supportsImageGenerationEndpoint } from '../model/utils/paintingModelOptions'
 import { getPaintingFileUrl } from '../utils/paintingFileUrl'
 
 /** A33 build: chat-style 生图 that talks to the image model only (gpt-image-2 generate/edit). */
 
 const PROVIDER_ID = 'a33-image'
 const STORAGE_KEY = 'a33.image-chat.sessions'
+const SIZES = ['auto', '1024x1024', '1536x1024', '1024x1536']
+const MAX_IMAGES = 4
 
 interface OutputImage {
   id: string
@@ -29,6 +58,11 @@ interface Turn {
   prompt: string
   references: string[]
   outputs: OutputImage[]
+  // Settings the turn ran with, so 重新生成 can repeat it (absent on turns from before 2.2.0)
+  modelId?: string
+  size?: string
+  numImages?: number
+  baseImage?: OutputImage
   error?: string
   createdAt: number
 }
@@ -69,12 +103,30 @@ function readFileAsDataUrl(file: File): Promise<string> {
   })
 }
 
+async function outputToPngBlob(image: OutputImage): Promise<Blob> {
+  const { data, mime } = await window.api.file.binaryImage(image.name)
+  const bitmap = await createImageBitmap(new Blob([new Uint8Array(data)], { type: mime }))
+  const canvas = document.createElement('canvas')
+  canvas.width = bitmap.width
+  canvas.height = bitmap.height
+  canvas.getContext('2d')?.drawImage(bitmap, 0, 0)
+  return new Promise((resolve, reject) =>
+    canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('PNG encode failed'))), 'image/png')
+  )
+}
+
 const newSession = (): Session => ({ id: crypto.randomUUID(), title: '', turns: [], updatedAt: Date.now() })
 
 export default function ImageChatPage() {
   const { t } = useTranslation()
   const { provider } = usePaintingProviderRuntime(PROVIDER_ID)
-  const [paintingModelId] = usePreference('feature.paintings.default_model_id')
+  const navigate = useNavigate()
+  const [paintingModelId, setPaintingModelId] = usePreference('feature.paintings.default_model_id')
+  const { models: providerModels } = useModels({ providerId: PROVIDER_ID })
+  const imageModels = useMemo(
+    () => providerModels.filter((m) => m.isEnabled && !m.isHidden && supportsImageGenerationEndpoint(m)),
+    [providerModels]
+  )
   const { createPainting } = usePaintings()
   const [sessions, setSessions] = useState<Session[]>(() => {
     const stored = loadSessions()
@@ -86,6 +138,9 @@ export default function ImageChatPage() {
   const [freshImage, setFreshImage] = useState(false)
   const [baseImageId, setBaseImageId] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  const [showParams, setShowParams] = useState(false)
+  const [size, setSize] = useState('auto')
+  const [numImages, setNumImages] = useState(1)
   const abortRef = useRef<AbortController | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
@@ -138,38 +193,48 @@ export default function ImageChatPage() {
     }
   }
 
-  const send = async () => {
-    const text = prompt.trim()
+  const runTurn = async (
+    text: string,
+    turnReferences: string[],
+    base: OutputImage | undefined,
+    params: { modelId: string; size: string; numImages: number }
+  ) => {
     if (!text || busy) return
     const sessionId = session.id
-    const turn: Turn = { id: crypto.randomUUID(), prompt: text, references, outputs: [], createdAt: Date.now() }
+    const turn: Turn = {
+      id: crypto.randomUUID(),
+      prompt: text,
+      references: turnReferences,
+      outputs: [],
+      ...params,
+      ...(base && { baseImage: base }),
+      createdAt: Date.now()
+    }
     updateSession(sessionId, (s) => ({
       ...s,
       title: s.title || text.slice(0, 30),
       turns: [...s.turns, turn],
       updatedAt: Date.now()
     }))
-    setPrompt('')
-    setReferences([])
     setBusy(true)
     const controller = new AbortController()
     abortRef.current = controller
     try {
-      const inputImages = [...(baseImage ? [await outputToDataUrl(baseImage)] : []), ...references]
+      const inputImages = [...(base ? [await outputToDataUrl(base)] : []), ...turnReferences]
       const files = await generatePainting({
         provider,
         signal: controller.signal,
-        modelId,
+        modelId: params.modelId,
         prompt: text,
         mode: inputImages.length > 0 ? 'edit' : 'generate',
-        paramValues: {},
+        paramValues: { numImages: params.numImages, ...(params.size !== 'auto' && { size: params.size }) },
         ...(inputImages.length > 0 && { inputImages })
       })
       const outputs = files.map(({ id, name, path, ext }) => ({ id, name, path, ext }))
       // A painting row references the files so cleanup keeps them; it also lists them in 高级生图 history.
       await createPainting({
         providerId: PROVIDER_ID,
-        modelId,
+        modelId: params.modelId,
         prompt: text,
         files: { output: outputs.map((o) => o.id), input: [] }
       })
@@ -193,15 +258,57 @@ export default function ImageChatPage() {
     }
   }
 
+  const send = () => {
+    const text = prompt.trim()
+    if (!text || busy) return
+    setPrompt('')
+    setReferences([])
+    void runTurn(text, references, baseImage, { modelId, size, numImages })
+  }
+
+  const regenerate = (turn: Turn) =>
+    void runTurn(turn.prompt, turn.references, turn.baseImage, {
+      modelId: turn.modelId ?? modelId,
+      size: turn.size ?? size,
+      numImages: turn.numImages ?? numImages
+    })
+
+  const copyImage = async (image: OutputImage) => {
+    try {
+      await navigator.clipboard.write([new ClipboardItem({ 'image/png': await outputToPngBlob(image) })])
+      toast.success(t('a33.image_chat.copied'))
+    } catch {
+      toast.error(t('a33.image_chat.action_failed'))
+    }
+  }
+
+  const saveImage = async (image: OutputImage) => {
+    try {
+      const { data } = await window.api.file.binaryImage(image.name)
+      await window.api.file.save(image.name, new Uint8Array(data))
+    } catch {
+      toast.error(t('a33.image_chat.action_failed'))
+    }
+  }
+
   return (
     <div className="flex h-full min-h-0 w-full">
       <aside className="flex w-56 shrink-0 flex-col border-border border-r">
         <PageHeader
           title={t('a33.image_chat.title')}
           action={
-            <Button size="sm" variant="ghost" onClick={startNewSession} aria-label={t('a33.image_chat.new_session')}>
-              <MessageSquarePlus size={14} />
-            </Button>
+            <div className="flex items-center">
+              <Button
+                size="sm"
+                variant="ghost"
+                className="text-muted-foreground text-xs"
+                onClick={() => void navigate({ to: '/app/paintings' })}>
+                {t('a33.image_chat.advanced')}
+              </Button>
+              <Button size="sm" variant="ghost" onClick={startNewSession} aria-label={t('a33.image_chat.new_session')}>
+                <MessageSquarePlus size={14} />
+              </Button>
+            </div>
           }
         />
         <Scrollbar className="min-h-0 flex-1">
@@ -261,7 +368,13 @@ export default function ImageChatPage() {
                   )}
                 </div>
                 {turn.error ? (
-                  <div className="text-destructive text-sm">{turn.error}</div>
+                  <div className="flex items-center gap-2 text-destructive text-sm">
+                    <span className="min-w-0">{turn.error}</span>
+                    <Button size="sm" variant="ghost" disabled={busy} onClick={() => regenerate(turn)}>
+                      <RefreshCw size={14} />
+                      {t('a33.image_chat.regenerate')}
+                    </Button>
+                  </div>
                 ) : turn.outputs.length === 0 ? (
                   <div className="flex items-center gap-2 text-muted-foreground text-sm">
                     <Loader2 size={14} className="animate-spin" />
@@ -279,18 +392,52 @@ export default function ImageChatPage() {
                             baseImage?.id === image.id && 'ring-2 ring-primary'
                           )}
                         />
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          className="absolute right-2 bottom-2 opacity-0 group-hover:opacity-100"
-                          onClick={() => {
-                            setBaseImageId(image.id)
-                            setFreshImage(false)
-                          }}>
-                          {t('a33.image_chat.continue_from')}
-                        </Button>
+                        <div className="absolute right-2 bottom-2 flex gap-1 opacity-0 group-hover:opacity-100">
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={() => {
+                              setBaseImageId(image.id)
+                              setFreshImage(false)
+                            }}>
+                            {t('a33.image_chat.continue_from')}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            aria-label={t('a33.image_chat.copy')}
+                            title={t('a33.image_chat.copy')}
+                            onClick={() => void copyImage(image)}>
+                            <Copy size={14} />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            aria-label={t('a33.image_chat.download')}
+                            title={t('a33.image_chat.download')}
+                            onClick={() => void saveImage(image)}>
+                            <Download size={14} />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            aria-label={t('a33.image_chat.reveal')}
+                            title={t('a33.image_chat.reveal')}
+                            onClick={() => void window.api.file.showInFolder(image.path)}>
+                            <FolderOpen size={14} />
+                          </Button>
+                        </div>
                       </div>
                     ))}
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="self-end"
+                      disabled={busy}
+                      onClick={() => regenerate(turn)}>
+                      <RefreshCw size={14} />
+                      {t('a33.image_chat.regenerate')}
+                    </Button>
                   </div>
                 )}
               </div>
@@ -331,11 +478,61 @@ export default function ImageChatPage() {
               onKeyDown={(event) => {
                 if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
                   event.preventDefault()
-                  void send()
+                  send()
                 }
               }}
             />
+            {showParams && (
+              <div className="flex flex-wrap items-center gap-2">
+                <Select
+                  value={paintingModelId ?? ''}
+                  onValueChange={(value) => void setPaintingModelId(value)}
+                  disabled={imageModels.length === 0}>
+                  <SelectTrigger aria-label={t('a33.image_chat.model')} className="h-8 w-auto min-w-36 text-xs">
+                    <SelectValue placeholder={modelId} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {imageModels.map((m) => (
+                      <SelectItem key={m.id} value={m.id}>
+                        {m.apiModelId ?? m.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={size} onValueChange={setSize}>
+                  <SelectTrigger aria-label={t('a33.image_chat.size')} className="h-8 w-auto text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SIZES.map((value) => (
+                      <SelectItem key={value} value={value}>
+                        {value === 'auto' ? t('a33.image_chat.size_auto') : value.replace('x', '×')}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={String(numImages)} onValueChange={(value) => setNumImages(Number(value))}>
+                  <SelectTrigger aria-label={t('a33.image_chat.count')} className="h-8 w-auto text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Array.from({ length: MAX_IMAGES }, (_, i) => i + 1).map((count) => (
+                      <SelectItem key={count} value={String(count)}>
+                        {t('a33.image_chat.count_value', { n: count })}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             <div className="flex items-center gap-3">
+              <Button
+                size="sm"
+                variant={showParams ? 'secondary' : 'ghost'}
+                onClick={() => setShowParams((value) => !value)}>
+                <SlidersHorizontal size={14} />
+                {t('a33.image_chat.params')}
+              </Button>
               <Button size="sm" variant="ghost" onClick={() => fileInputRef.current?.click()}>
                 <ImagePlus size={14} />
                 {t('a33.image_chat.add_reference')}
@@ -363,7 +560,7 @@ export default function ImageChatPage() {
                   {t('a33.image_chat.stop')}
                 </Button>
               ) : (
-                <Button size="sm" disabled={!prompt.trim()} onClick={() => void send()}>
+                <Button size="sm" disabled={!prompt.trim()} onClick={() => send()}>
                   <Send size={14} />
                   {t('a33.image_chat.send')}
                 </Button>

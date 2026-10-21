@@ -16,10 +16,11 @@ import { useModels } from '@renderer/hooks/useModel'
 import { useProvider } from '@renderer/hooks/useProvider'
 import { supportsImageGenerationEndpoint } from '@renderer/pages/paintings/model/utils/paintingModelOptions'
 import { toast } from '@renderer/services/toast'
+import { A33_KEY_PROMPT_EVENT, type A33KeyPromptKind } from '@renderer/utils/a33'
 import { resolveSidebarActiveItem } from '@renderer/utils/sidebar'
 import { isNonChatModel } from '@shared/utils/model'
 
-type PromptKind = 'chat' | 'image' | 'video'
+type PromptKind = A33KeyPromptKind
 
 const CHAT_APPS = new Set(['assistants', 'translate', 'agents', 'code_tools'])
 const PROVIDER_BY_KIND: Record<PromptKind, string> = { chat: 'a33', image: 'a33-image', video: 'a33-video' }
@@ -69,6 +70,15 @@ export function A33KeyPrompt() {
     setApiKey('')
     setKind(wanted)
   }, [wanted, kind, isLoading, wantedHasKey, wantedHasModel])
+
+  useEffect(() => {
+    const onRequest = (event: Event) => {
+      setApiKey('')
+      setKind((event as CustomEvent<PromptKind>).detail)
+    }
+    window.addEventListener(A33_KEY_PROMPT_EVENT, onRequest)
+    return () => window.removeEventListener(A33_KEY_PROMPT_EVENT, onRequest)
+  }, [])
 
   const close = () => {
     if (kind) dismissedRef.current.add(kind)

@@ -7,6 +7,7 @@ import { getQuickPanelSearchAliases } from '@renderer/components/composer/quickP
 import { GENERATE_IMAGE_TOOLBAR_MANIFEST } from '@renderer/components/composer/tools/toolbarManifests'
 import { defineTool, type ToolLauncherApi } from '@renderer/components/composer/tools/types'
 import { useAssistant } from '@renderer/hooks/useAssistant'
+import { requestA33KeyPrompt } from '@renderer/utils/a33'
 
 interface Props {
   assistantId: string
@@ -16,22 +17,26 @@ interface Props {
 /**
  * Toggle that flips `assistant.settings.enableGenerateImage`, which gates the `generate_image`
  * builtin tool on the main side (see `PaintingTool.ts`'s `applies`). The actual image is produced
- * by a separate painting model configured in Settings › Default Model, so the toggle is disabled
- * (with a hint) until one is set — there is nothing to generate with otherwise.
+ * by a separate painting model configured in Settings › Default Model; until one is set the toggle
+ * opens the A33 生图 key prompt (A33AutoSetup picks the model once the key lands).
  */
 const useGenerateImageToolController = ({ assistantId, launcher }: Props) => {
   const { t } = useTranslation()
   const { assistant, updateAssistant } = useAssistant(assistantId)
   const [paintingModelId] = usePreference('feature.paintings.default_model_id')
 
-  const enabled = assistant?.settings.enableGenerateImage ?? false
-  const disabledReason = paintingModelId ? undefined : t('chat.input.generate_image_no_model')
-  const isDisabled = Boolean(disabledReason)
+  // A33 build: with no image model yet, the toggle asks for a 生图 key instead of being disabled.
+  const needsKey = !paintingModelId
+  const enabled = !needsKey && (assistant?.settings.enableGenerateImage ?? false)
 
   const handleToggle = useCallback(() => {
-    if (!assistant || isDisabled) return
+    if (needsKey) {
+      requestA33KeyPrompt('image')
+      return
+    }
+    if (!assistant) return
     void updateAssistant({ settings: { enableGenerateImage: !enabled } })
-  }, [assistant, enabled, isDisabled, updateAssistant])
+  }, [assistant, enabled, needsKey, updateAssistant])
 
   useEffect(() => {
     return launcher.registerLaunchers([
@@ -39,15 +44,13 @@ const useGenerateImageToolController = ({ assistantId, launcher }: Props) => {
         ...GENERATE_IMAGE_TOOLBAR_MANIFEST.toolbar,
         sources: ['popover'],
         label: t('chat.input.generate_image'),
-        description: '',
+        description: needsKey ? t('a33.generate_image.need_key') : '',
         searchAliases: getQuickPanelSearchAliases(t, 'chat.input.generate_image', ['generate image']),
-        disabledReason,
         active: enabled,
-        disabled: isDisabled,
         action: handleToggle
       }
     ])
-  }, [disabledReason, enabled, handleToggle, isDisabled, launcher, t])
+  }, [enabled, handleToggle, launcher, needsKey, t])
 
   return { enabled, handleToggle }
 }
