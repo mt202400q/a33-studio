@@ -3,6 +3,7 @@ import { openaiCompatible } from './types'
 export default openaiCompatible({
   id: 'a33',
   name: 'A33',
+  availableInEditions: ['global', 'cn'],
   baseUrl: 'https://a33.club',
   anthropic: 'https://a33.club',
   website: {

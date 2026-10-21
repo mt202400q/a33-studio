@@ -1,6 +1,7 @@
 {
   "providers": [
     {
+      "availableInEditions": ["global", "cn"],
       "defaultChatEndpoint": "openai-chat-completions",
       "description": "A33 - AI model provider",
       "endpointConfigs": {
