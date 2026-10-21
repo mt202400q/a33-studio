@@ -30,6 +30,12 @@ jobs:
 
       - uses: pnpm/action-setup@v5
 
+      - name: Install Linux build deps
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rpm libevdev-dev libxtst-dev libx11-dev libxfixes-dev libwayland-dev
+
       - run: pnpm install
 
       - name: Build
