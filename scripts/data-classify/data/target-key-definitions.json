@@ -320,11 +320,6 @@
           "type": "shortcut"
         },
         {
-          "id": "sidebar-shortcut:core.app:gallery",
-          "target": { "kind": "resource", "locator": { "providerId": "core.app", "resourceId": "gallery" } },
-          "type": "shortcut"
-        },
-        {
           "id": "sidebar-shortcut:core.app:translate",
           "target": { "kind": "resource", "locator": { "providerId": "core.app", "resourceId": "translate" } },
           "type": "shortcut"

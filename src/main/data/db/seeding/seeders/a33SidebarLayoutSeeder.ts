@@ -14,7 +14,8 @@ export class A33SidebarLayoutSeeder implements ISeeder {
   readonly name = 'a33SidebarLayout'
   readonly description = 'Reset the sidebar shortcuts to the A33 default layout once'
   readonly executionPolicy = 'run-on-change' as const
-  readonly version = '1'
+  // 2: 图库 moved off the sidebar (still in the launchpad)
+  readonly version = '2'
 
   run(db: DbType): void {
     const value = DefaultPreferences.default[SIDEBAR_SHORTCUT_KEY]
