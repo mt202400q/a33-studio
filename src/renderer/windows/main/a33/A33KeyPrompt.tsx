@@ -61,8 +61,8 @@ export function A33KeyPrompt() {
   const wantedProvider = wanted ? targetByKind[wanted].provider : undefined
   // Undefined until the provider row loads — never prompt on a not-yet-known state.
   const wantedHasKey = wantedProvider ? wantedProvider.apiKeys.length > 0 : undefined
-  // The 生视频 page lists its models straight from a33.club, so only the key matters there.
-  const wantedHasModel = wanted === 'image' ? hasImageModel : wanted === 'chat' ? hasChatModel : false
+  // 生图 / 生视频 pages only ever use their own A33 key, so there only the key matters; 高级生图 can use any image model.
+  const wantedHasModel = activeApp === 'paintings' ? hasImageModel : wanted === 'chat' ? hasChatModel : false
 
   useEffect(() => {
     if (!wanted || kind || isLoading || wantedHasKey !== false || wantedHasModel) return

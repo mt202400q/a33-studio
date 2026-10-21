@@ -30,9 +30,11 @@ import {
 } from '@cherrystudio/ui'
 import { cn } from '@cherrystudio/ui/lib/utils'
 import { usePreference } from '@data/hooks/usePreference'
+import { A33KeyBanner, useA33HasKey } from '@renderer/components/a33/A33KeyBanner'
 import { useModels } from '@renderer/hooks/useModel'
 import { usePaintings } from '@renderer/hooks/usePaintings'
 import { toast } from '@renderer/services/toast'
+import { requestA33KeyPrompt } from '@renderer/utils/a33'
 
 import { usePaintingProviderRuntime } from '../hooks/usePaintingProviderRuntime'
 import { generatePainting } from '../model/generatePainting'
@@ -138,6 +140,7 @@ export default function ImageChatPage() {
   const [freshImage, setFreshImage] = useState(false)
   const [baseImageId, setBaseImageId] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  const hasKey = useA33HasKey('image')
   const [showParams, setShowParams] = useState(false)
   const [size, setSize] = useState('auto')
   const [numImages, setNumImages] = useState(1)
@@ -261,6 +264,10 @@ export default function ImageChatPage() {
   const send = () => {
     const text = prompt.trim()
     if (!text || busy) return
+    if (hasKey === false) {
+      requestA33KeyPrompt('image')
+      return
+    }
     setPrompt('')
     setReferences([])
     void runTurn(text, references, baseImage, { modelId, size, numImages })
@@ -446,7 +453,8 @@ export default function ImageChatPage() {
           </div>
         </Scrollbar>
 
-        <div className="mx-auto w-full max-w-3xl px-6 pb-5">
+        <div className="mx-auto flex w-full max-w-3xl flex-col gap-2 px-6 pb-5">
+          <A33KeyBanner kind="image" />
           <div className="flex flex-col gap-2 rounded-xl border border-border p-3">
             {(references.length > 0 || baseImage) && (
               <div className="flex flex-wrap items-center gap-2 text-muted-foreground text-xs">

@@ -15,9 +15,11 @@ import {
   Textarea
 } from '@cherrystudio/ui'
 import { cn } from '@cherrystudio/ui/lib/utils'
+import { A33KeyBanner } from '@renderer/components/a33/A33KeyBanner'
 import { useProvider } from '@renderer/hooks/useProvider'
 import { ipcApi } from '@renderer/ipc'
 import { toast } from '@renderer/services/toast'
+import { requestA33KeyPrompt } from '@renderer/utils/a33'
 import type { A33VideoModel } from '@shared/ipc/schemas/a33Video'
 
 /** A33 build: chat-style 生视频 against a33.club /v1/videos (submit → poll → save to Documents/A33 Studio/视频). */
@@ -188,6 +190,10 @@ export default function VideoChatPage() {
 
   const send = async () => {
     const text = prompt.trim()
+    if (keyCount === 0) {
+      requestA33KeyPrompt('video')
+      return
+    }
     if (!text || !modelId || submitting) return
     const sessionId = session.id
     const turn: Turn = {
@@ -313,7 +319,8 @@ export default function VideoChatPage() {
           </div>
         </Scrollbar>
 
-        <div className="mx-auto w-full max-w-3xl px-6 pb-5">
+        <div className="mx-auto flex w-full max-w-3xl flex-col gap-2 px-6 pb-5">
+          <A33KeyBanner kind="video" />
           <div className="flex flex-col gap-2 rounded-xl border border-border p-3">
             <Textarea.Input
               value={prompt}
@@ -396,7 +403,11 @@ export default function VideoChatPage() {
                   {t('a33.video_chat.estimate', { amount: estimate.toFixed(2) })}
                 </span>
               )}
-              <Button size="sm" loading={submitting} disabled={!prompt.trim() || !modelId} onClick={() => void send()}>
+              <Button
+                size="sm"
+                loading={submitting}
+                disabled={!prompt.trim() || (keyCount > 0 && !modelId)}
+                onClick={() => void send()}>
                 <Send size={14} />
                 {t('a33.video_chat.send')}
               </Button>
