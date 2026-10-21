@@ -301,8 +301,8 @@
           "type": "shortcut"
         },
         {
-          "id": "sidebar-shortcut:core.app:paintings",
-          "target": { "kind": "resource", "locator": { "providerId": "core.app", "resourceId": "paintings" } },
+          "id": "sidebar-shortcut:core.assistant:0a3c5b0b-28e1-499b-8377-6be491002277",
+          "target": { "kind": "resource", "locator": { "providerId": "core.assistant", "resourceId": "0a3c5b0b-28e1-499b-8377-6be491002277" } },
           "type": "shortcut"
         },
         {

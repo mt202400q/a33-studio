@@ -2,10 +2,12 @@ import { useEffect, useRef } from 'react'
 
 import { usePreference } from '@data/hooks/usePreference'
 import { loggerService } from '@logger'
+import { useAssistant } from '@renderer/hooks/useAssistant'
 import { useModels } from '@renderer/hooks/useModel'
 import { useProvider } from '@renderer/hooks/useProvider'
 import { supportsImageGenerationEndpoint } from '@renderer/pages/paintings/model/utils/paintingModelOptions'
 import { useProviderModelSync } from '@renderer/pages/settings/ProviderSettings'
+import { A33_IMAGE_ASSISTANT_ID } from '@shared/data/presets/a33ImageAssistant'
 import type { Model } from '@shared/data/types/model'
 import { isNonChatModel } from '@shared/utils/model'
 
@@ -63,6 +65,7 @@ export function A33AutoSetup() {
   const [translateModelId, setTranslateModelId] = usePreference('feature.translate.model_id')
   const [paintingModelId, setPaintingModelId] = usePreference('feature.paintings.default_model_id')
   const [, setPaintingProvider] = usePreference('feature.paintings.default_provider')
+  const { assistant: imageAssistant, updateAssistant: updateImageAssistant } = useAssistant(A33_IMAGE_ASSISTANT_ID)
 
   useEffect(() => {
     const usable = chatModels.filter((model) => model.isEnabled && !model.isHidden && !isNonChatModel(model))
@@ -72,14 +75,18 @@ export function A33AutoSetup() {
     if (!defaultModelId && chat) void setDefaultModelId(chat.id)
     if (!quickModelId && fast) void setQuickModelId(fast.id)
     if (!translateModelId && fast) void setTranslateModelId(fast.id)
+    // The 生图 assistant only writes prompts and routes edits, so the fast tier is enough.
+    if (imageAssistant && !imageAssistant.modelId && fast) void updateImageAssistant({ modelId: fast.id })
   }, [
     chatModels,
     defaultModelId,
     quickModelId,
     translateModelId,
+    imageAssistant,
     setDefaultModelId,
     setQuickModelId,
-    setTranslateModelId
+    setTranslateModelId,
+    updateImageAssistant
   ])
 
   useEffect(() => {

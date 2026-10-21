@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
+import { A33_IMAGE_ASSISTANT_ID } from '@shared/data/presets/a33ImageAssistant'
+
 import type { PreferenceSchemas } from '../preferenceSchemas'
 import { DefaultPreferences } from '../preferenceSchemas'
 import { createSidebarShortcutId, type SidebarShortcutTarget } from '../preferenceTypes'
@@ -79,19 +81,19 @@ describe('DefaultPreferences', () => {
     ]
     expect(DefaultPreferences.default['ui.sidebar.favorites']).toEqual(legacyFavorites)
 
-    // A33 build: every visible launchpad app is pinned to the sidebar by default.
+    // A33 build: visible apps pinned common-first; 生图 is the seeded image-generation assistant.
     const sidebarShortcutsDefault: PreferenceSchemas['default']['ui.sidebar_shortcut'] = [
-      'assistants',
-      'paintings',
-      'translate',
-      'files',
-      'notes',
-      'code_tools',
-      'agents'
-    ].map((resourceId) => {
+      ['core.app', 'assistants'],
+      ['core.assistant', A33_IMAGE_ASSISTANT_ID],
+      ['core.app', 'translate'],
+      ['core.app', 'files'],
+      ['core.app', 'notes'],
+      ['core.app', 'code_tools'],
+      ['core.app', 'agents']
+    ].map(([providerId, resourceId]) => {
       const target: SidebarShortcutTarget = {
         kind: 'resource',
-        locator: { providerId: 'core.app', resourceId }
+        locator: { providerId, resourceId }
       }
       return { type: 'shortcut', id: createSidebarShortcutId(target), target }
     })
