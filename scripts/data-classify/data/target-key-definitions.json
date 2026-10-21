@@ -301,11 +301,6 @@
           "type": "shortcut"
         },
         {
-          "id": "sidebar-shortcut:core.app:agents",
-          "target": { "kind": "resource", "locator": { "providerId": "core.app", "resourceId": "agents" } },
-          "type": "shortcut"
-        },
-        {
           "id": "sidebar-shortcut:core.app:paintings",
           "target": { "kind": "resource", "locator": { "providerId": "core.app", "resourceId": "paintings" } },
           "type": "shortcut"
@@ -316,11 +311,6 @@
           "type": "shortcut"
         },
         {
-          "id": "sidebar-shortcut:core.app:code_tools",
-          "target": { "kind": "resource", "locator": { "providerId": "core.app", "resourceId": "code_tools" } },
-          "type": "shortcut"
-        },
-        {
           "id": "sidebar-shortcut:core.app:files",
           "target": { "kind": "resource", "locator": { "providerId": "core.app", "resourceId": "files" } },
           "type": "shortcut"
@@ -328,6 +318,16 @@
         {
           "id": "sidebar-shortcut:core.app:notes",
           "target": { "kind": "resource", "locator": { "providerId": "core.app", "resourceId": "notes" } },
+          "type": "shortcut"
+        },
+        {
+          "id": "sidebar-shortcut:core.app:code_tools",
+          "target": { "kind": "resource", "locator": { "providerId": "core.app", "resourceId": "code_tools" } },
+          "type": "shortcut"
+        },
+        {
+          "id": "sidebar-shortcut:core.app:agents",
+          "target": { "kind": "resource", "locator": { "providerId": "core.app", "resourceId": "agents" } },
           "type": "shortcut"
         }
       ],
