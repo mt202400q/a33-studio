@@ -44,7 +44,18 @@ jobs:
       - name: Set version from tag
         if: startsWith(github.ref, 'refs/tags/v')
         shell: bash
-        run: npm pkg set version="${GITHUB_REF_NAME#v}"
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          npm pkg set version="$VERSION"
+          # The build requires the bundled release history to contain the current version.
+          node -e "
+            const fs = require('fs'); const { parse } = require('yaml')
+            const file = 'resources/cherry-studio/release-history.json'
+            const history = JSON.parse(fs.readFileSync(file, 'utf8'))
+            const releaseNotes = parse(fs.readFileSync('electron-builder.yml', 'utf8')).releaseInfo.releaseNotes
+            if (!history.some((e) => e.version === '$VERSION')) history.unshift({ releaseNotes, version: '$VERSION' })
+            fs.writeFileSync(file, JSON.stringify(history, null, 2) + '\\n')
+          "
 
       - name: Build
         run: pnpm ${{ matrix.script }} --publish never ${{ matrix.args }}
