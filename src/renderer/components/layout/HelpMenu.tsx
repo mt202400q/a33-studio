@@ -9,6 +9,7 @@ import { DoctorPopup } from '@renderer/components/doctor'
 import type { SidebarVisibleLayout } from '@renderer/components/Sidebar'
 import { useMiniAppPopup } from '@renderer/hooks/useMiniAppPopup'
 import { useOpenReleaseNotes } from '@renderer/hooks/useOpenReleaseNotes'
+import { A33_HIDE_CHERRY_SERVICES } from '@renderer/utils/a33'
 
 const logger = loggerService.withContext('HelpMenu')
 
@@ -126,24 +127,29 @@ export function HelpMenu({
             firstActionRef.current?.focus()
           }}>
           <MenuList>
+            {!A33_HIDE_CHERRY_SERVICES && (
+              <MenuItem
+                size="sm"
+                className="h-8"
+                ref={firstActionRef}
+                icon={<Sparkles size={16} />}
+                label={t('help.whats_new')}
+                onClick={() => runAfterClose(openReleaseNotes)}
+              />
+            )}
+            {!A33_HIDE_CHERRY_SERVICES && (
+              <MenuItem
+                size="sm"
+                className="h-8"
+                icon={<BookOpen size={16} />}
+                label={t('help.guide')}
+                onClick={() => runAfterClose(openDocs)}
+              />
+            )}
             <MenuItem
               size="sm"
               className="h-8"
-              ref={firstActionRef}
-              icon={<Sparkles size={16} />}
-              label={t('help.whats_new')}
-              onClick={() => runAfterClose(openReleaseNotes)}
-            />
-            <MenuItem
-              size="sm"
-              className="h-8"
-              icon={<BookOpen size={16} />}
-              label={t('help.guide')}
-              onClick={() => runAfterClose(openDocs)}
-            />
-            <MenuItem
-              size="sm"
-              className="h-8"
+              ref={A33_HIDE_CHERRY_SERVICES ? firstActionRef : undefined}
               icon={<FileArchive size={16} />}
               label={t('settings.about.feedback.diagnostics.title')}
               onClick={() =>
@@ -152,13 +158,15 @@ export function HelpMenu({
                 })
               }
             />
-            <MenuItem
-              size="sm"
-              className="h-8"
-              icon={<MessageSquareText size={16} />}
-              label={t('help.feedback')}
-              onClick={() => runAfterClose(onFeedbackClick)}
-            />
+            {!A33_HIDE_CHERRY_SERVICES && (
+              <MenuItem
+                size="sm"
+                className="h-8"
+                icon={<MessageSquareText size={16} />}
+                label={t('help.feedback')}
+                onClick={() => runAfterClose(onFeedbackClick)}
+              />
+            )}
             <MenuItem
               size="sm"
               className="h-8"

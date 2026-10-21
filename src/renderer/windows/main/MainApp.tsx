@@ -31,6 +31,7 @@ import { registerImageModeChooser } from '@renderer/services/imageExportModeChoo
 import { getSidebarDefaultLandingUrl } from '@renderer/utils/sidebar'
 import type { Tab } from '@shared/data/cache/cacheValueTypes'
 
+import { A33AutoSetup } from './a33/A33AutoSetup'
 import { useAppUpdateHandler } from './hooks/useAppUpdateHandler'
 import { useAutoBackupEvents } from './hooks/useAutoBackupEvents'
 import { useTopicNamingErrorNotification } from './hooks/useTopicNamingErrorNotification'
@@ -128,6 +129,7 @@ export function MainWindowContent(): React.ReactElement {
             <AppShell />
           )}
           <MainWindowRuntime />
+          <A33AutoSetup />
           <ConversationNotificationRuntime />
           <McpInteractionHost />
           <PopupHost />

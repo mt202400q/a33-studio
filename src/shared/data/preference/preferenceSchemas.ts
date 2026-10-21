@@ -826,7 +826,7 @@ export const DefaultPreferences: PreferenceSchemas = {
     'feature.openclaw.gateway_port': 18790,
     'feature.openclaw.selected_model_id': null,
     'feature.paintings.default_model_id': null,
-    'feature.paintings.default_provider': 'zhipu',
+    'feature.paintings.default_provider': 'a33-image',
     'feature.quick_assistant.assistant_id': '',
     'feature.quick_assistant.click_tray_to_show': false,
     'feature.quick_assistant.enabled': false,

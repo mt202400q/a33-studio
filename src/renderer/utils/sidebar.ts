@@ -6,6 +6,8 @@ import {
 } from '@shared/data/preference/preferenceTypes'
 import { CONVERSATION_ROUTES, conversationRouteUrl } from '@shared/utils/conversationRoute'
 
+import { A33_HIDDEN_SIDEBAR_APPS } from './a33'
+
 /**
  * Context passed to sidebar navigation handlers. Carries per-call state the
  * registry can't know on its own (preferences).
@@ -104,7 +106,9 @@ const SIDEBAR_APP_DEFINITIONS = [
 export type SidebarAppId = (typeof SIDEBAR_APP_DEFINITIONS)[number]['id']
 export type SidebarApp = SidebarAppDefinition<SidebarAppId>
 
-export const SIDEBAR_APPS: readonly SidebarApp[] = SIDEBAR_APP_DEFINITIONS
+export const SIDEBAR_APPS: readonly SidebarApp[] = SIDEBAR_APP_DEFINITIONS.filter(
+  (app) => !A33_HIDDEN_SIDEBAR_APPS.has(app.id)
+)
 
 const SIDEBAR_APP_BY_ID: Record<SidebarAppId, SidebarApp> = SIDEBAR_APPS.reduce(
   (acc, app) => {

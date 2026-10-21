@@ -2298,7 +2298,7 @@
         {
           "originalKey": "defaultPaintingProvider",
           "type": "string",
-          "defaultValue": "zhipu",
+          "defaultValue": "a33-image",
           "status": "classified",
           "category": "preferences",
           "targetKey": "feature.paintings.default_provider"

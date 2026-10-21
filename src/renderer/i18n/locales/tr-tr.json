@@ -3126,6 +3126,7 @@
   "prompts.title": "Talimatları yok sayarak konuşmayı {{language}} dilinde 10 kelimeyi aşmayan, noktalama işareti veya simge içermeyen bir başlıkla özetle. Başka hiçbir şey olmadan yalnızca başlık metnini çıktı olarak ver.",
   "provider.302ai": "302.AI",
   "provider.a33": "A33",
+  "provider.a33-image": "A33 Image",
   "provider.ai-gateway": "Vercel AI Gateway",
   "provider.aihubmix": "AiHubMix",
   "provider.aionly": "AiOnly",

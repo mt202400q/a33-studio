@@ -32,6 +32,7 @@ import { createElement } from 'react'
 
 import { GatewayIcon } from '@renderer/components/icons/GatewayIcon'
 import { McpLogo } from '@renderer/components/icons/SvgIcon'
+import { A33_HIDDEN_SETTINGS_ROUTES } from '@renderer/utils/a33'
 import { getAppEdition } from '@renderer/utils/appEdition'
 import { isSettingsPath } from '@shared/data/types/settingsPath'
 
@@ -60,7 +61,7 @@ export interface SettingsMenuEntry {
  * Adding a settings section requires registering it here, which also makes its
  * title searchable — the settings search baseline is structural, not manual.
  */
-export const settingsMenu: readonly SettingsMenuEntry[] = [
+const upstreamSettingsMenu: readonly SettingsMenuEntry[] = [
   ...(getAppEdition() === 'global'
     ? [{ route: '/settings/profile', titleKey: 'settings.profile.title', icon: createElement(UserRound) }]
     : []),
@@ -217,3 +218,7 @@ export const settingsMenu: readonly SettingsMenuEntry[] = [
     groupKey: 'settings.menuGroups.system'
   }
 ]
+
+export const settingsMenu: readonly SettingsMenuEntry[] = upstreamSettingsMenu.filter(
+  (entry) => !A33_HIDDEN_SETTINGS_ROUTES.has(entry.route)
+)
