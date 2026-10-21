@@ -108,6 +108,10 @@ const SIDEBAR_APP_DEFINITIONS = [
   {
     id: 'image_chat',
     routePrefix: '/app/image'
+  },
+  {
+    id: 'video_chat',
+    routePrefix: '/app/video'
   }
 ] as const satisfies readonly SidebarAppDefinition[]
 

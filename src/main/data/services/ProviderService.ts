@@ -73,7 +73,7 @@ type NewUserProviderInput = Omit<InsertUserProviderRow, 'orderKey'>
 export type ProviderIdentity = Pick<UserProviderRow, 'providerId' | 'presetProviderId'>
 
 // CLI-only backends are not shown in Settings → Providers but power agent runtimes.
-const A33_ALLOWED_PRESET_IDS = new Set(['a33', 'a33-image', 'claude-code', 'openai-codex', 'grok-cli'])
+const A33_ALLOWED_PRESET_IDS = new Set(['a33', 'a33-image', 'a33-video', 'claude-code', 'openai-codex', 'grok-cli'])
 
 function isProviderAvailableInCurrentEdition(provider: Pick<Provider, 'availableInEditions'>): boolean {
   const availableInEditions = provider.availableInEditions

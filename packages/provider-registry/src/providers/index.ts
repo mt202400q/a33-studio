@@ -1,6 +1,7 @@
 import p_302ai from './302ai'
 import p_a33 from './a33'
 import p_a33_image from './a33-image'
+import p_a33_video from './a33-video'
 import p_aihubmix from './aihubmix'
 import p_aionly from './aionly'
 import p_alayanew from './alayanew'
@@ -72,6 +73,7 @@ import p_zhipu from './zhipu'
 export const PROVIDERS: Provider[] = [
   p_a33,
   p_a33_image,
+  p_a33_video,
   p_cherryin,
   p_silicon,
   p_aihubmix,

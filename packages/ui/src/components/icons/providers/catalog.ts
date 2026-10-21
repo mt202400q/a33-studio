@@ -179,6 +179,7 @@ export const PROVIDER_ICON_CATALOG = {
   '302ai': Ai302Icon,
   a33: A33Icon,
   'a33-image': A33Icon,
+  'a33-video': A33Icon,
   '3min-top': MinTop3Icon,
   abacus: AbacusIcon,
   'ai-only': AiOnlyIcon,

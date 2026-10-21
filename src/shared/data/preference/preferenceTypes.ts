@@ -121,7 +121,8 @@ export const SIDEBAR_FAVORITES = [
   'notes',
   'openclaw',
   'gallery',
-  'image_chat'
+  'image_chat',
+  'video_chat'
 ] as const
 
 export type SidebarFavorite = (typeof SIDEBAR_FAVORITES)[number]

@@ -176,6 +176,7 @@ export const PROVIDER_ICON_META_CATALOG = {
   '302ai': ai302Meta,
   a33: a33Meta,
   'a33-image': { ...a33Meta, id: 'a33-image' },
+  'a33-video': { ...a33Meta, id: 'a33-video' },
   '3min-top': minTop3Meta,
   abacus: abacusMeta,
   'ai-only': aiOnlyMeta,

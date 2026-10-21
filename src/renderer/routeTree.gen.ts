@@ -24,6 +24,7 @@ import { Route as AppLaunchpadRouteImport } from './routes/app/launchpad'
 import { Route as AppNotesRouteImport } from './routes/app/notes'
 import { Route as AppReleaseNotesRouteImport } from './routes/app/release-notes'
 import { Route as AppTranslateRouteImport } from './routes/app/translate'
+import { Route as AppVideoRouteImport } from './routes/app/video'
 import { Route as SettingsIndexRouteImport } from './routes/settings.index'
 import { Route as SettingsAboutRouteImport } from './routes/settings/about'
 import { Route as SettingsApiGatewayRouteImport } from './routes/settings/api-gateway'
@@ -148,6 +149,11 @@ const AppReleaseNotesRoute = AppReleaseNotesRouteImport.update({
 const AppTranslateRoute = AppTranslateRouteImport.update({
   id: '/translate',
   path: '/translate',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppVideoRoute = AppVideoRouteImport.update({
+  id: '/video',
+  path: '/video',
   getParentRoute: () => AppRoute,
 } as any)
 const SettingsIndexRoute = SettingsIndexRouteImport.update({
@@ -422,6 +428,7 @@ export interface FileRoutesByFullPath {
   '/app/notes': typeof AppNotesRoute
   '/app/release-notes': typeof AppReleaseNotesRoute
   '/app/translate': typeof AppTranslateRoute
+  '/app/video': typeof AppVideoRoute
   '/settings/about': typeof SettingsAboutRoute
   '/settings/api-gateway': typeof SettingsApiGatewayRoute
   '/settings/appearance': typeof SettingsAppearanceRoute
@@ -488,6 +495,7 @@ export interface FileRoutesByTo {
   '/app/notes': typeof AppNotesRoute
   '/app/release-notes': typeof AppReleaseNotesRoute
   '/app/translate': typeof AppTranslateRoute
+  '/app/video': typeof AppVideoRoute
   '/settings/about': typeof SettingsAboutRoute
   '/settings/api-gateway': typeof SettingsApiGatewayRoute
   '/settings/appearance': typeof SettingsAppearanceRoute
@@ -553,6 +561,7 @@ export interface FileRoutesById {
   '/app/notes': typeof AppNotesRoute
   '/app/release-notes': typeof AppReleaseNotesRoute
   '/app/translate': typeof AppTranslateRoute
+  '/app/video': typeof AppVideoRoute
   '/settings/about': typeof SettingsAboutRoute
   '/settings/api-gateway': typeof SettingsApiGatewayRoute
   '/settings/appearance': typeof SettingsAppearanceRoute
@@ -622,6 +631,7 @@ export interface FileRouteTypes {
     | '/app/notes'
     | '/app/release-notes'
     | '/app/translate'
+    | '/app/video'
     | '/settings/about'
     | '/settings/api-gateway'
     | '/settings/appearance'
@@ -688,6 +698,7 @@ export interface FileRouteTypes {
     | '/app/notes'
     | '/app/release-notes'
     | '/app/translate'
+    | '/app/video'
     | '/settings/about'
     | '/settings/api-gateway'
     | '/settings/appearance'
@@ -752,6 +763,7 @@ export interface FileRouteTypes {
     | '/app/notes'
     | '/app/release-notes'
     | '/app/translate'
+    | '/app/video'
     | '/settings/about'
     | '/settings/api-gateway'
     | '/settings/appearance'
@@ -914,6 +926,13 @@ declare module '@tanstack/react-router' {
       path: '/translate'
       fullPath: '/app/translate'
       preLoaderRoute: typeof AppTranslateRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/video': {
+      id: '/app/video'
+      path: '/video'
+      fullPath: '/app/video'
+      preLoaderRoute: typeof AppVideoRouteImport
       parentRoute: typeof AppRoute
     }
     '/settings/': {
@@ -1283,6 +1302,7 @@ interface AppRouteChildren {
   AppNotesRoute: typeof AppNotesRoute
   AppReleaseNotesRoute: typeof AppReleaseNotesRoute
   AppTranslateRoute: typeof AppTranslateRoute
+  AppVideoRoute: typeof AppVideoRoute
   AppMiniAppAppIdRoute: typeof AppMiniAppAppIdRoute
   AppPaintingsSplatRoute: typeof AppPaintingsSplatRoute
   AppMiniAppIndexRoute: typeof AppMiniAppIndexRoute
@@ -1303,6 +1323,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppNotesRoute: AppNotesRoute,
   AppReleaseNotesRoute: AppReleaseNotesRoute,
   AppTranslateRoute: AppTranslateRoute,
+  AppVideoRoute: AppVideoRoute,
   AppMiniAppAppIdRoute: AppMiniAppAppIdRoute,
   AppPaintingsSplatRoute: AppPaintingsSplatRoute,
   AppMiniAppIndexRoute: AppMiniAppIndexRoute,

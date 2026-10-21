@@ -57,6 +57,27 @@
     {
       "availableInEditions": ["global", "cn"],
       "defaultChatEndpoint": "openai-chat-completions",
+      "description": "A33 生视频 - AI model provider",
+      "endpointConfigs": {
+        "openai-chat-completions": {
+          "adapterFamily": "openai-compatible",
+          "baseUrl": "https://a33.club"
+        }
+      },
+      "id": "a33-video",
+      "metadata": {
+        "website": {
+          "apiKey": "https://a33.club/keys",
+          "docs": "https://a33.club",
+          "models": "https://a33.club",
+          "official": "https://a33.club"
+        }
+      },
+      "name": "A33 生视频"
+    },
+    {
+      "availableInEditions": ["global", "cn"],
+      "defaultChatEndpoint": "openai-chat-completions",
       "description": "CherryIN - AI model provider",
       "endpointConfigs": {
         "anthropic-messages": {
@@ -2780,5 +2801,5 @@
       "presetProviderId": "minimax"
     }
   ],
-  "version": "1b44511badb438e6"
+  "version": "577812ce10c1518e"
 }

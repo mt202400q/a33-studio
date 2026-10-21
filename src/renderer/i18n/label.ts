@@ -23,6 +23,7 @@ const providerKeyMap = {
   '302ai': 'provider.302ai',
   a33: 'provider.a33',
   'a33-image': 'provider.a33-image',
+  'a33-video': 'provider.a33-video',
   aihubmix: 'provider.aihubmix',
   alayanew: 'provider.alayanew',
   anthropic: 'provider.anthropic',
@@ -181,6 +182,7 @@ const titleKeyMap = {
   notes: 'title.notes',
   gallery: 'a33.gallery.title',
   image: 'a33.image_chat.title',
+  video: 'a33.video_chat.title',
   paintings: 'title.paintings',
   settings: 'title.settings',
   translate: 'title.translate',
@@ -212,7 +214,8 @@ const sidebarIconKeyMap = {
   code_tools: 'code.title',
   notes: 'notes.title',
   gallery: 'a33.gallery.title',
-  image_chat: 'a33.image_chat.title'
+  image_chat: 'a33.image_chat.title',
+  video_chat: 'a33.video_chat.title'
 } as const
 
 export const getSidebarIconLabelKey = (key: string): string => {
@@ -234,7 +237,8 @@ const sidebarFavoriteKeyMap = {
   code_tools: 'code.title',
   notes: 'notes.title',
   gallery: 'a33.gallery.title',
-  image_chat: 'a33.image_chat.title'
+  image_chat: 'a33.image_chat.title',
+  video_chat: 'a33.video_chat.title'
 } as const
 export const getSidebarFavoriteLabelKey = (key: string): string => {
   return getLabelKey(sidebarFavoriteKeyMap, key)

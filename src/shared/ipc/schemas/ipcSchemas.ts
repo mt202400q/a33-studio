@@ -1,5 +1,6 @@
 import type { RouteDef } from '../define'
 import { a33ImageArchiveRequestSchemas } from './a33ImageArchive'
+import { a33VideoRequestSchemas } from './a33Video'
 import { type AiEventSchemas, aiRequestSchemas } from './ai'
 import { type ApiGatewayEventSchemas, apiGatewayRequestSchemas } from './apiGateway'
 import { type AppEventSchemas, appRequestSchemas } from './app'
@@ -91,6 +92,7 @@ export const ipcRequestSchemas = {
   ...pdfjsRequestSchemas,
   ...printRequestSchemas,
   ...a33ImageArchiveRequestSchemas,
+  ...a33VideoRequestSchemas,
   ...profileRequestSchemas,
   ...providerRequestSchemas,
   ...quickAssistantRequestSchemas,

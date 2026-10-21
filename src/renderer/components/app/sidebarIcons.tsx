@@ -1,5 +1,6 @@
 import type { LucideProps } from 'lucide-react'
 import {
+  Clapperboard,
   Code,
   FileSearch,
   Folder,
@@ -37,5 +38,6 @@ export const SIDEBAR_ICON_COMPONENTS = {
   code_tools: CodeMateIcon,
   notes: NotepadText,
   gallery: Images,
-  image_chat: ImagePlus
+  image_chat: ImagePlus,
+  video_chat: Clapperboard
 } satisfies Record<SidebarAppId, SidebarIconComponent>

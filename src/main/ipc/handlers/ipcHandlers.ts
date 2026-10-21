@@ -2,6 +2,7 @@ import type { IpcRequestSchemas } from '@shared/ipc/schemas/ipcSchemas'
 import type { IpcHandlersFor } from '@shared/ipc/types'
 
 import { a33ImageArchiveHandlers } from './a33ImageArchive'
+import { a33VideoHandlers } from './a33Video'
 import { aiHandlers } from './ai'
 import { apiGatewayHandlers } from './apiGateway'
 import { appHandlers } from './app'
@@ -95,6 +96,7 @@ export const ipcHandlers: IpcHandlersFor<IpcRequestSchemas> = {
   ...pdfjsHandlers,
   ...printHandlers,
   ...a33ImageArchiveHandlers,
+  ...a33VideoHandlers,
   ...profileHandlers,
   ...providerHandlers,
   ...quickAssistantHandlers,

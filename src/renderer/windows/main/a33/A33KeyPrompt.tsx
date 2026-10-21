@@ -19,10 +19,15 @@ import { toast } from '@renderer/services/toast'
 import { resolveSidebarActiveItem } from '@renderer/utils/sidebar'
 import { isNonChatModel } from '@shared/utils/model'
 
-type PromptKind = 'chat' | 'image'
+type PromptKind = 'chat' | 'image' | 'video'
 
 const CHAT_APPS = new Set(['assistants', 'translate', 'agents', 'code_tools'])
-const PROVIDER_BY_KIND: Record<PromptKind, string> = { chat: 'a33', image: 'a33-image' }
+const PROVIDER_BY_KIND: Record<PromptKind, string> = { chat: 'a33', image: 'a33-image', video: 'a33-video' }
+const TEXT_BY_KIND = {
+  chat: { title: 'a33.key_prompt.chat_title', description: 'a33.key_prompt.chat_description' },
+  image: { title: 'a33.key_prompt.image_title', description: 'a33.key_prompt.image_description' },
+  video: { title: 'a33.key_prompt.video_title', description: 'a33.key_prompt.video_description' }
+} as const
 
 /**
  * Opening a model-backed app with no usable model asks for an a33.club key; the A33 provider
@@ -34,6 +39,7 @@ export function A33KeyPrompt() {
   const { models: enabledModels, isLoading } = useModels({ enabled: true })
   const chatProvider = useProvider(PROVIDER_BY_KIND.chat)
   const imageProvider = useProvider(PROVIDER_BY_KIND.image)
+  const videoProvider = useProvider(PROVIDER_BY_KIND.video)
   const [kind, setKind] = useState<PromptKind | null>(null)
   const [apiKey, setApiKey] = useState('')
   const [saving, setSaving] = useState(false)
@@ -41,13 +47,21 @@ export function A33KeyPrompt() {
 
   const activeApp = activeTab?.url ? resolveSidebarActiveItem(activeTab.url) : ''
   const wanted: PromptKind | null =
-    activeApp === 'paintings' || activeApp === 'image_chat' ? 'image' : CHAT_APPS.has(activeApp) ? 'chat' : null
+    activeApp === 'paintings' || activeApp === 'image_chat'
+      ? 'image'
+      : activeApp === 'video_chat'
+        ? 'video'
+        : CHAT_APPS.has(activeApp)
+          ? 'chat'
+          : null
+  const targetByKind = { chat: chatProvider, image: imageProvider, video: videoProvider }
   const hasChatModel = enabledModels.some((model) => !isNonChatModel(model))
   const hasImageModel = enabledModels.some((model) => supportsImageGenerationEndpoint(model))
-  const wantedProvider = wanted === 'image' ? imageProvider.provider : chatProvider.provider
+  const wantedProvider = wanted ? targetByKind[wanted].provider : undefined
   // Undefined until the provider row loads — never prompt on a not-yet-known state.
   const wantedHasKey = wantedProvider ? wantedProvider.apiKeys.length > 0 : undefined
-  const wantedHasModel = wanted === 'image' ? hasImageModel : hasChatModel
+  // The 生视频 page lists its models straight from a33.club, so only the key matters there.
+  const wantedHasModel = wanted === 'image' ? hasImageModel : wanted === 'chat' ? hasChatModel : false
 
   useEffect(() => {
     if (!wanted || kind || isLoading || wantedHasKey !== false || wantedHasModel) return
@@ -64,7 +78,7 @@ export function A33KeyPrompt() {
   const save = async () => {
     const key = apiKey.trim()
     if (!kind || !key) return
-    const target = kind === 'chat' ? chatProvider : imageProvider
+    const target = targetByKind[kind]
     setSaving(true)
     try {
       await target.addApiKey(key)
@@ -82,10 +96,8 @@ export function A33KeyPrompt() {
     <Dialog open={kind !== null} onOpenChange={(open) => !open && close()}>
       <DialogContent className="sm:max-w-[460px]">
         <DialogHeader>
-          <DialogTitle>{t(kind === 'image' ? 'a33.key_prompt.image_title' : 'a33.key_prompt.chat_title')}</DialogTitle>
-          <DialogDescription className="leading-6">
-            {t(kind === 'image' ? 'a33.key_prompt.image_description' : 'a33.key_prompt.chat_description')}
-          </DialogDescription>
+          <DialogTitle>{t(TEXT_BY_KIND[kind ?? 'chat'].title)}</DialogTitle>
+          <DialogDescription className="leading-6">{t(TEXT_BY_KIND[kind ?? 'chat'].description)}</DialogDescription>
         </DialogHeader>
         <Input
           autoFocus
