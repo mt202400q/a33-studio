@@ -79,12 +79,15 @@ describe('DefaultPreferences', () => {
     ]
     expect(DefaultPreferences.default['ui.sidebar.favorites']).toEqual(legacyFavorites)
 
+    // A33 build: every visible launchpad app is pinned to the sidebar by default.
     const sidebarShortcutsDefault: PreferenceSchemas['default']['ui.sidebar_shortcut'] = [
-      'agents',
       'assistants',
-      'translate',
+      'agents',
       'paintings',
-      'knowledge'
+      'translate',
+      'code_tools',
+      'files',
+      'notes'
     ].map((resourceId) => {
       const target: SidebarShortcutTarget = {
         kind: 'resource',

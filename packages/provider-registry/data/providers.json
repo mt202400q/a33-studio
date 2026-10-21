@@ -28,7 +28,7 @@
     {
       "availableInEditions": ["global", "cn"],
       "defaultChatEndpoint": "openai-chat-completions",
-      "description": "A33 绘画 - AI model provider",
+      "description": "A33 生图 - AI model provider",
       "endpointConfigs": {
         "openai-chat-completions": {
           "adapterFamily": "openai-compatible",
@@ -52,7 +52,7 @@
           "official": "https://a33.club"
         }
       },
-      "name": "A33 绘画"
+      "name": "A33 生图"
     },
     {
       "availableInEditions": ["global", "cn"],

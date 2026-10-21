@@ -3,7 +3,7 @@ import { defineProvider } from './types'
 // a33.club image group (sub2api, platform=openai): needs a key from the 生图 group.
 export default defineProvider({
   id: 'a33-image',
-  name: 'A33 绘画',
+  name: 'A33 生图',
   availableInEditions: ['global', 'cn'],
   defaultChatEndpoint: 'openai-chat-completions',
   endpointConfigs: {
