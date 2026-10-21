@@ -7,7 +7,6 @@ import { Button, Dialog, DialogContent, DialogTitle, EmptyState, PageHeader, Scr
 import { usePreference } from '@data/hooks/usePreference'
 import { ipcApi } from '@renderer/ipc'
 import { toast } from '@renderer/services/toast'
-import { A33_IMAGE_ASSISTANT_ID } from '@shared/data/presets/a33ImageAssistant'
 import type { ArchivedImageItem, ArchivedImageListing } from '@shared/ipc/schemas/a33ImageArchive'
 
 /** A33 build: browses generated images archived under Documents/A33 Studio/图/<date>/. */
@@ -50,7 +49,7 @@ export default function GalleryPage() {
     if (!(await copy(image))) return
     setSelected(null)
     toast.info(t('a33.gallery.continue_hint'))
-    void navigate({ to: '/app/chat', search: { assistantId: A33_IMAGE_ASSISTANT_ID } })
+    void navigate({ to: '/app/image' })
   }
 
   const trash = async (image: ArchivedImageItem) => {

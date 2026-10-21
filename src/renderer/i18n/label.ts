@@ -180,6 +180,7 @@ const titleKeyMap = {
   'mcp-servers': 'title.mcp-servers',
   notes: 'title.notes',
   gallery: 'a33.gallery.title',
+  image: 'a33.image_chat.title',
   paintings: 'title.paintings',
   settings: 'title.settings',
   translate: 'title.translate',
@@ -210,7 +211,8 @@ const sidebarIconKeyMap = {
   files: 'files.title',
   code_tools: 'code.title',
   notes: 'notes.title',
-  gallery: 'a33.gallery.title'
+  gallery: 'a33.gallery.title',
+  image_chat: 'a33.image_chat.title'
 } as const
 
 export const getSidebarIconLabelKey = (key: string): string => {
@@ -231,7 +233,8 @@ const sidebarFavoriteKeyMap = {
   files: 'files.title',
   code_tools: 'code.title',
   notes: 'notes.title',
-  gallery: 'a33.gallery.title'
+  gallery: 'a33.gallery.title',
+  image_chat: 'a33.image_chat.title'
 } as const
 export const getSidebarFavoriteLabelKey = (key: string): string => {
   return getLabelKey(sidebarFavoriteKeyMap, key)

@@ -141,7 +141,8 @@ vi.mock('@renderer/i18n/label', () => ({
       code_tools: 'Code',
       notes: 'Notes',
       openclaw: 'OpenClaw',
-      gallery: 'Gallery'
+      gallery: 'Gallery',
+      image_chat: 'Image'
     })[key]
 }))
 

@@ -1,50 +1,24 @@
-import { eq, isNull } from 'drizzle-orm'
-import { app } from 'electron'
+import { and, eq, isNull } from 'drizzle-orm'
 
 import { assistantTable } from '@data/db/schemas/assistant'
-import { insertWithOrderKey } from '@data/services/utils/orderKey'
-import {
-  A33_IMAGE_ASSISTANT_ID,
-  A33_IMAGE_ASSISTANT_SEED,
-  getA33ImageAssistantNameForLocale
-} from '@shared/data/presets/a33ImageAssistant'
+import { A33_IMAGE_ASSISTANT_ID } from '@shared/data/presets/a33ImageAssistant'
 
 import type { DbType, ISeeder } from '../../types'
 
-/** A33 build: the 生图 sidebar entry is a chat with this image-generation assistant. */
+/**
+ * A33 build: 2.1.8/2.1.9 seeded a chat assistant for 生图. 生图 now has its own page that talks to
+ * the image model directly, so the assistant is soft-deleted to keep it out of the 对话 list.
+ */
 export class A33ImageAssistantSeeder implements ISeeder {
   readonly name = 'a33ImageAssistant'
-  readonly description = 'Insert the A33 image-generation assistant once (a user deletion is respected)'
+  readonly description = 'Soft-delete the retired A33 image-generation chat assistant'
   readonly executionPolicy = 'run-on-change' as const
-  readonly version = '1'
+  readonly version = '2'
 
   run(db: DbType): void {
-    db.transaction((tx) => {
-      const [existing] = tx
-        .select({ id: assistantTable.id })
-        .from(assistantTable)
-        .where(eq(assistantTable.id, A33_IMAGE_ASSISTANT_ID))
-        .limit(1)
-        .all()
-      if (existing) return
-
-      let locale: string | undefined
-      try {
-        locale = app.getPreferredSystemLanguages()[0]
-      } catch {
-        locale = undefined
-      }
-
-      insertWithOrderKey(
-        tx,
-        assistantTable,
-        {
-          ...A33_IMAGE_ASSISTANT_SEED,
-          name: getA33ImageAssistantNameForLocale(locale),
-          settings: { ...A33_IMAGE_ASSISTANT_SEED.settings }
-        },
-        { pkColumn: assistantTable.id, scope: isNull(assistantTable.deletedAt) }
-      )
-    })
+    db.update(assistantTable)
+      .set({ deletedAt: Date.now() })
+      .where(and(eq(assistantTable.id, A33_IMAGE_ASSISTANT_ID), isNull(assistantTable.deletedAt)))
+      .run()
   }
 }

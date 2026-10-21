@@ -40,7 +40,8 @@ export function A33KeyPrompt() {
   const dismissedRef = useRef(new Set<PromptKind>())
 
   const activeApp = activeTab?.url ? resolveSidebarActiveItem(activeTab.url) : ''
-  const wanted: PromptKind | null = activeApp === 'paintings' ? 'image' : CHAT_APPS.has(activeApp) ? 'chat' : null
+  const wanted: PromptKind | null =
+    activeApp === 'paintings' || activeApp === 'image_chat' ? 'image' : CHAT_APPS.has(activeApp) ? 'chat' : null
   const hasChatModel = enabledModels.some((model) => !isNonChatModel(model))
   const hasImageModel = enabledModels.some((model) => supportsImageGenerationEndpoint(model))
   const wantedProvider = wanted === 'image' ? imageProvider.provider : chatProvider.provider

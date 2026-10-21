@@ -1,7 +1,5 @@
 import { describe, expect, it } from 'vitest'
 
-import { A33_IMAGE_ASSISTANT_ID } from '@shared/data/presets/a33ImageAssistant'
-
 import type { PreferenceSchemas } from '../preferenceSchemas'
 import { DefaultPreferences } from '../preferenceSchemas'
 import { createSidebarShortcutId, type SidebarShortcutTarget } from '../preferenceTypes'
@@ -81,10 +79,10 @@ describe('DefaultPreferences', () => {
     ]
     expect(DefaultPreferences.default['ui.sidebar.favorites']).toEqual(legacyFavorites)
 
-    // A33 build: visible apps pinned common-first; 生图 is the seeded image-generation assistant.
+    // A33 build: visible apps pinned common-first.
     const sidebarShortcutsDefault: PreferenceSchemas['default']['ui.sidebar_shortcut'] = [
       ['core.app', 'assistants'],
-      ['core.assistant', A33_IMAGE_ASSISTANT_ID],
+      ['core.app', 'image_chat'],
       ['core.app', 'translate'],
       ['core.app', 'files'],
       ['core.app', 'notes'],

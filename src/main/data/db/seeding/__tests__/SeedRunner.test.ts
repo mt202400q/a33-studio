@@ -10,7 +10,6 @@ import { assistantTable } from '@data/db/schemas/assistant'
 import { seeders } from '@data/db/seeding/seederRegistry'
 import { SeedRunner } from '@data/db/seeding/SeedRunner'
 import type { ISeeder } from '@data/db/types'
-import { A33_IMAGE_ASSISTANT_ID } from '@shared/data/presets/a33ImageAssistant'
 
 const BOOTSTRAP_MARKER_KEY = 'seedRunner:bootstrapCompleted'
 
@@ -185,9 +184,7 @@ describe('SeedRunner', () => {
     runner.runAll(seeders)
     runner.runAll(seeders)
 
-    // A33 build: the default assistant plus the seeded 生图 assistant, each exactly once.
     const assistants = await dbh.db.select().from(assistantTable)
-    expect(assistants).toHaveLength(2)
-    expect(assistants.map((assistant) => assistant.id)).toContain(A33_IMAGE_ASSISTANT_ID)
+    expect(assistants).toHaveLength(1)
   })
 })

@@ -7,6 +7,7 @@ import {
   LayoutGrid,
   MessageSquare,
   MousePointerClick,
+  ImagePlus,
   Images,
   NotepadText,
   Palette
@@ -35,5 +36,6 @@ export const SIDEBAR_ICON_COMPONENTS = {
   files: Folder,
   code_tools: CodeMateIcon,
   notes: NotepadText,
-  gallery: Images
+  gallery: Images,
+  image_chat: ImagePlus
 } satisfies Record<SidebarAppId, SidebarIconComponent>
