@@ -58,6 +58,7 @@ import {
 } from '@shared/utils/model'
 import { isExternalCliProvider, isOllamaProvider } from '@shared/utils/provider'
 
+import { archiveGeneratedImages } from './a33ImageArchive'
 import { isAgentSessionTopic } from './agentSession/topic'
 import { createAnalyticsHook } from './hooks/analyticsHook'
 import { createAiUsagePlugin } from './hooks/billingHook'
@@ -1033,7 +1034,15 @@ export class AiService extends BaseService {
     // through to the direct image model, which never passes `modelDescriptor`.
     const transportProviderId = provider.presetProviderId ?? provider.id
     if (request.uniqueModelId && hasImageTransport(transportProviderId, model.apiModelId ?? model.id)) {
-      return await this.generateImageViaJob({ ...request, inputImages }, structured, vendorBag, signal, source)
+      const jobResult = await this.generateImageViaJob(
+        { ...request, inputImages },
+        structured,
+        vendorBag,
+        signal,
+        source
+      )
+      void archiveGeneratedImages(jobResult.files, request.prompt)
+      return jobResult
     }
 
     const { sdkConfig, credentialReceipt } = await this.resolveTransportFor(request)
@@ -1126,6 +1135,7 @@ export class AiService extends BaseService {
           fileManager.createInternalEntry({ source: 'base64', data, cleanupPolicy: request.cleanupPolicy })
         )
       )
+      void archiveGeneratedImages(files, request.prompt)
 
       return { files }
     })

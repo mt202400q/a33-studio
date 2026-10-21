@@ -435,6 +435,8 @@ export interface PreferenceSchemas {
     // target-key-definitions/complex/complex
     'feature.openclaw.selected_model_id': string | null
     // target-key-definitions/complex/complex
+    'feature.paintings.archive.dir': string
+    'feature.paintings.archive.enabled': boolean
     'feature.paintings.default_model_id': string | null
     // redux/settings/defaultPaintingProvider
     'feature.paintings.default_provider': string
@@ -825,6 +827,8 @@ export const DefaultPreferences: PreferenceSchemas = {
     'feature.notes.sort_type': 'sort_a2z',
     'feature.openclaw.gateway_port': 18790,
     'feature.openclaw.selected_model_id': null,
+    'feature.paintings.archive.dir': '',
+    'feature.paintings.archive.enabled': true,
     'feature.paintings.default_model_id': null,
     'feature.paintings.default_provider': 'a33-image',
     'feature.quick_assistant.assistant_id': '',
@@ -912,7 +916,7 @@ export const DefaultPreferences: PreferenceSchemas = {
     'ui.launchpad.app_order': [],
     'ui.navbar.position': 'top',
     'ui.sidebar.favorites': [{ id: 'agents', type: 'app' }, { id: 'assistants', type: 'app' }, { id: 'translate', type: 'app' }, { id: 'paintings', type: 'app' }, { id: 'knowledge', type: 'app' }],
-    'ui.sidebar_shortcut': [{ id: 'sidebar-shortcut:core.app:assistants', target: { kind: 'resource', locator: { providerId: 'core.app', resourceId: 'assistants' } }, type: 'shortcut' }, { id: 'sidebar-shortcut:core.assistant:0a3c5b0b-28e1-499b-8377-6be491002277', target: { kind: 'resource', locator: { providerId: 'core.assistant', resourceId: '0a3c5b0b-28e1-499b-8377-6be491002277' } }, type: 'shortcut' }, { id: 'sidebar-shortcut:core.app:translate', target: { kind: 'resource', locator: { providerId: 'core.app', resourceId: 'translate' } }, type: 'shortcut' }, { id: 'sidebar-shortcut:core.app:files', target: { kind: 'resource', locator: { providerId: 'core.app', resourceId: 'files' } }, type: 'shortcut' }, { id: 'sidebar-shortcut:core.app:notes', target: { kind: 'resource', locator: { providerId: 'core.app', resourceId: 'notes' } }, type: 'shortcut' }, { id: 'sidebar-shortcut:core.app:code_tools', target: { kind: 'resource', locator: { providerId: 'core.app', resourceId: 'code_tools' } }, type: 'shortcut' }, { id: 'sidebar-shortcut:core.app:agents', target: { kind: 'resource', locator: { providerId: 'core.app', resourceId: 'agents' } }, type: 'shortcut' }],
+    'ui.sidebar_shortcut': [{ id: 'sidebar-shortcut:core.app:assistants', target: { kind: 'resource', locator: { providerId: 'core.app', resourceId: 'assistants' } }, type: 'shortcut' }, { id: 'sidebar-shortcut:core.assistant:0a3c5b0b-28e1-499b-8377-6be491002277', target: { kind: 'resource', locator: { providerId: 'core.assistant', resourceId: '0a3c5b0b-28e1-499b-8377-6be491002277' } }, type: 'shortcut' }, { id: 'sidebar-shortcut:core.app:gallery', target: { kind: 'resource', locator: { providerId: 'core.app', resourceId: 'gallery' } }, type: 'shortcut' }, { id: 'sidebar-shortcut:core.app:translate', target: { kind: 'resource', locator: { providerId: 'core.app', resourceId: 'translate' } }, type: 'shortcut' }, { id: 'sidebar-shortcut:core.app:files', target: { kind: 'resource', locator: { providerId: 'core.app', resourceId: 'files' } }, type: 'shortcut' }, { id: 'sidebar-shortcut:core.app:notes', target: { kind: 'resource', locator: { providerId: 'core.app', resourceId: 'notes' } }, type: 'shortcut' }, { id: 'sidebar-shortcut:core.app:code_tools', target: { kind: 'resource', locator: { providerId: 'core.app', resourceId: 'code_tools' } }, type: 'shortcut' }, { id: 'sidebar-shortcut:core.app:agents', target: { kind: 'resource', locator: { providerId: 'core.app', resourceId: 'agents' } }, type: 'shortcut' }],
     'ui.theme_mode': PreferenceTypes.ThemeMode.system,
     'ui.theme_user.code_font_family': '',
     'ui.theme_user.color_primary': '#00b96b',

@@ -85,6 +85,7 @@ describe('DefaultPreferences', () => {
     const sidebarShortcutsDefault: PreferenceSchemas['default']['ui.sidebar_shortcut'] = [
       ['core.app', 'assistants'],
       ['core.assistant', A33_IMAGE_ASSISTANT_ID],
+      ['core.app', 'gallery'],
       ['core.app', 'translate'],
       ['core.app', 'files'],
       ['core.app', 'notes'],

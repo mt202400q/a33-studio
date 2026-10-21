@@ -9,6 +9,7 @@ import agentsIcon from '@renderer/assets/images/apps/launchpad-agents.svg'
 import assistantsIcon from '@renderer/assets/images/apps/launchpad-assistants.svg'
 import codeToolsIcon from '@renderer/assets/images/apps/launchpad-code-tools.svg'
 import filesIcon from '@renderer/assets/images/apps/launchpad-files.svg'
+import galleryIcon from '@renderer/assets/images/apps/launchpad-gallery.svg'
 import knowledgeIcon from '@renderer/assets/images/apps/launchpad-knowledge.svg'
 import miniAppIcon from '@renderer/assets/images/apps/launchpad-mini-app.svg'
 import notesIcon from '@renderer/assets/images/apps/launchpad-notes.svg'
@@ -48,7 +49,8 @@ const APP_ICON_SOURCES: Record<SidebarAppId, string> = {
   knowledge: knowledgeIcon,
   files: filesIcon,
   code_tools: codeToolsIcon,
-  notes: notesIcon
+  notes: notesIcon,
+  gallery: galleryIcon
 }
 
 export default function LaunchpadPage() {

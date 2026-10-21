@@ -83,6 +83,20 @@
       "description": "Days of application log files to keep; older rotated logs are swept automatically (v2 new feature, no v1 source)"
     },
     {
+      "targetKey": "feature.paintings.archive.enabled",
+      "type": "boolean",
+      "defaultValue": true,
+      "status": "classified",
+      "description": "A33: also save every generated image to the dated archive folder"
+    },
+    {
+      "targetKey": "feature.paintings.archive.dir",
+      "type": "string",
+      "defaultValue": "",
+      "status": "classified",
+      "description": "A33: archive root for generated images; empty = Documents/A33 Studio/图"
+    },
+    {
       "targetKey": "app.privacy.policy_version",
       "type": "string",
       "defaultValue": "",
@@ -303,6 +317,11 @@
         {
           "id": "sidebar-shortcut:core.assistant:0a3c5b0b-28e1-499b-8377-6be491002277",
           "target": { "kind": "resource", "locator": { "providerId": "core.assistant", "resourceId": "0a3c5b0b-28e1-499b-8377-6be491002277" } },
+          "type": "shortcut"
+        },
+        {
+          "id": "sidebar-shortcut:core.app:gallery",
+          "target": { "kind": "resource", "locator": { "providerId": "core.app", "resourceId": "gallery" } },
           "type": "shortcut"
         },
         {

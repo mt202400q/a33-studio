@@ -119,7 +119,8 @@ export const SIDEBAR_FAVORITES = [
   'files',
   'code_tools',
   'notes',
-  'openclaw'
+  'openclaw',
+  'gallery'
 ] as const
 
 export type SidebarFavorite = (typeof SIDEBAR_FAVORITES)[number]

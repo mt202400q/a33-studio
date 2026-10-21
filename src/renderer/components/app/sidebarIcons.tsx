@@ -7,6 +7,7 @@ import {
   LayoutGrid,
   MessageSquare,
   MousePointerClick,
+  Images,
   NotepadText,
   Palette
 } from 'lucide-react'
@@ -33,5 +34,6 @@ export const SIDEBAR_ICON_COMPONENTS = {
   knowledge: FileSearch,
   files: Folder,
   code_tools: CodeMateIcon,
-  notes: NotepadText
+  notes: NotepadText,
+  gallery: Images
 } satisfies Record<SidebarAppId, SidebarIconComponent>
