@@ -72,6 +72,9 @@ function applyJsonMergePatch(target: unknown, patch: unknown): unknown {
 type NewUserProviderInput = Omit<InsertUserProviderRow, 'orderKey'>
 export type ProviderIdentity = Pick<UserProviderRow, 'providerId' | 'presetProviderId'>
 
+// CLI-only backends are not shown in Settings → Providers but power agent runtimes.
+const A33_ALLOWED_PRESET_IDS = new Set(['a33', 'claude-code', 'openai-codex', 'grok-cli'])
+
 function isProviderAvailableInCurrentEdition(provider: Pick<Provider, 'availableInEditions'>): boolean {
   const availableInEditions = provider.availableInEditions
   return isMigratedFromV1() || !availableInEditions || availableInEditions.includes(getAppEdition())
@@ -80,10 +83,11 @@ function isProviderAvailableInCurrentEdition(provider: Pick<Provider, 'available
 function getAvailableProviderMetadata(row: ProviderIdentity): ProviderDisplayMetadata | null {
   if (isRetiredProvider(row.providerId, row.presetProviderId)) return null
 
-  const metadata = getDataService('ProviderRegistryService').getProviderDisplayMetadata(
-    row.providerId,
-    row.presetProviderId
-  )
+  const registry = getDataService('ProviderRegistryService')
+  // A33 build: hide every built-in preset except a33; user-created custom providers stay.
+  if (!A33_ALLOWED_PRESET_IDS.has(row.providerId) && registry.isRegistryProvider(row.providerId)) return null
+
+  const metadata = registry.getProviderDisplayMetadata(row.providerId, row.presetProviderId)
   return isProviderAvailableInCurrentEdition(metadata) ? metadata : null
 }
 

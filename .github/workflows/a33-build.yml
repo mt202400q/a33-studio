@@ -1,0 +1,67 @@
+name: A33 Studio Build
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-2022
+            script: build:win:x64
+          - os: macos-latest
+            script: build:mac
+          - os: ubuntu-latest
+            script: build:linux:x64
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: ".node-version"
+
+      - uses: pnpm/action-setup@v5
+
+      - run: pnpm install
+
+      - name: Build
+        run: pnpm ${{ matrix.script }} --publish never
+        env:
+          NODE_OPTIONS: --max-old-space-size=8192
+          # Unsigned build: skip macOS keychain identity lookup
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: a33-studio-${{ runner.os }}
+          path: |
+            dist/*.exe
+            dist/*.dmg
+            dist/*.zip
+            dist/*.AppImage
+            dist/*.deb
+            dist/*.rpm
+            dist/latest*.yml
+          if-no-files-found: error
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/*
