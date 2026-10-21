@@ -55,6 +55,8 @@ interface OnboardingPageProps {
 }
 
 const ENABLE_CHERRY_ACCOUNT_LOGIN = false
+// A33 build: onboarding offers provider setup only — no CherryIN login, no Cherry privacy consent.
+const A33_PROVIDER_ONLY_ONBOARDING = true
 const CHERRYIN_OAUTH_SERVER = 'https://open.cherryin.ai'
 const CHERRYIN_LOGIN_LOADING_TIMEOUT_MS = 10_000
 const PESSIMISTIC_PREFERENCE_OPTIONS = { optimistic: false } as const
@@ -94,7 +96,7 @@ export default function OnboardingPage({
   const [isLoggingIn, setIsLoggingIn] = useState(false)
   const [isCompleting, setIsCompleting] = useState(false)
   const [isUpdatingPrivacy, setIsUpdatingPrivacy] = useState(false)
-  const [privacyAccepted, setPrivacyAccepted] = useState(true)
+  const [privacyAccepted, setPrivacyAccepted] = useState(!A33_PROVIDER_ONLY_ONBOARDING)
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false)
   const [showNoCloudModelsDialog, setShowNoCloudModelsDialog] = useState(false)
   const loginAttemptRef = useRef(0)
@@ -447,23 +449,27 @@ export default function OnboardingPage({
                     <p className="m-0 text-muted-foreground text-sm">{t('onboarding.welcome.subtitle')}</p>
                   </div>
                   <div className="mt-8 flex w-full flex-col gap-3">
-                    <Button
-                      type="button"
-                      size="lg"
-                      className="h-11 w-full rounded-xl"
-                      loading={isPrimaryLoginPending}
-                      disabled={
-                        isUpdatingPrivacy || (shouldUseCherryAccountLogin && cloudStatus?.phase === 'signed-in')
-                      }
-                      onClick={() =>
-                        void runAfterPrivacyChoice(
-                          shouldUseCherryAccountLogin ? handleCherryCloudLogin : handleCherryInLogin
-                        )
-                      }>
-                      {!isPrimaryLoginPending && <LogIn size={16} />}
-                      {primaryLoginLabel}
-                    </Button>
-                    {shouldUseCherryAccountLogin && cloudStatus?.phase === 'authorizing' ? (
+                    {!A33_PROVIDER_ONLY_ONBOARDING && (
+                      <Button
+                        type="button"
+                        size="lg"
+                        className="h-11 w-full rounded-xl"
+                        loading={isPrimaryLoginPending}
+                        disabled={
+                          isUpdatingPrivacy || (shouldUseCherryAccountLogin && cloudStatus?.phase === 'signed-in')
+                        }
+                        onClick={() =>
+                          void runAfterPrivacyChoice(
+                            shouldUseCherryAccountLogin ? handleCherryCloudLogin : handleCherryInLogin
+                          )
+                        }>
+                        {!isPrimaryLoginPending && <LogIn size={16} />}
+                        {primaryLoginLabel}
+                      </Button>
+                    )}
+                    {!A33_PROVIDER_ONLY_ONBOARDING &&
+                    shouldUseCherryAccountLogin &&
+                    cloudStatus?.phase === 'authorizing' ? (
                       <Button
                         type="button"
                         variant="outline"
@@ -476,7 +482,7 @@ export default function OnboardingPage({
                     ) : null}
                     <Button
                       type="button"
-                      variant="outline"
+                      variant={A33_PROVIDER_ONLY_ONBOARDING ? 'default' : 'outline'}
                       size="lg"
                       className="h-11 w-full rounded-xl"
                       disabled={isUpdatingPrivacy}
@@ -568,7 +574,7 @@ export default function OnboardingPage({
             )}
           </div>
 
-          {step === 'welcome' && (
+          {step === 'welcome' && !A33_PROVIDER_ONLY_ONBOARDING && (
             <div className="nodrag flex shrink-0 justify-center px-6 py-3">
               <div className="flex max-w-full items-center gap-2 text-center text-muted-foreground text-xs leading-relaxed">
                 <Checkbox
