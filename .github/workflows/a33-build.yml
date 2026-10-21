@@ -19,6 +19,8 @@ jobs:
             script: build:win:x64
           - os: macos-latest
             script: build:mac
+            # Ad-hoc sign: unsigned arm64 apps show "damaged" instead of "Open Anyway"
+            args: -c.mac.identity=-
           - os: ubuntu-latest
             script: build:linux:x64
     steps:
@@ -39,7 +41,7 @@ jobs:
       - run: pnpm install
 
       - name: Build
-        run: pnpm ${{ matrix.script }} --publish never
+        run: pnpm ${{ matrix.script }} --publish never ${{ matrix.args }}
         env:
           NODE_OPTIONS: --max-old-space-size=8192
           # Unsigned build: skip macOS keychain identity lookup
