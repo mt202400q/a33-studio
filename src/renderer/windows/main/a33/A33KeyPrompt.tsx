@@ -1,0 +1,111 @@
+import { useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  Input
+} from '@cherrystudio/ui'
+import { useTabs } from '@renderer/hooks/tab'
+import { useModels } from '@renderer/hooks/useModel'
+import { useProvider } from '@renderer/hooks/useProvider'
+import { supportsImageGenerationEndpoint } from '@renderer/pages/paintings/model/utils/paintingModelOptions'
+import { toast } from '@renderer/services/toast'
+import { resolveSidebarActiveItem } from '@renderer/utils/sidebar'
+import { isNonChatModel } from '@shared/utils/model'
+
+type PromptKind = 'chat' | 'image'
+
+const CHAT_APPS = new Set(['assistants', 'translate', 'agents', 'code_tools'])
+const PROVIDER_BY_KIND: Record<PromptKind, string> = { chat: 'a33', image: 'a33-image' }
+
+/**
+ * Opening a model-backed app with no usable model asks for an a33.club key; the A33 provider
+ * already points at https://a33.club, and A33AutoSetup syncs models once the key lands.
+ */
+export function A33KeyPrompt() {
+  const { t } = useTranslation()
+  const { activeTab } = useTabs()
+  const { models: enabledModels, isLoading } = useModels({ enabled: true })
+  const chatProvider = useProvider(PROVIDER_BY_KIND.chat)
+  const imageProvider = useProvider(PROVIDER_BY_KIND.image)
+  const [kind, setKind] = useState<PromptKind | null>(null)
+  const [apiKey, setApiKey] = useState('')
+  const [saving, setSaving] = useState(false)
+  const dismissedRef = useRef(new Set<PromptKind>())
+
+  const activeApp = activeTab?.url ? resolveSidebarActiveItem(activeTab.url) : ''
+  const wanted: PromptKind | null = activeApp === 'paintings' ? 'image' : CHAT_APPS.has(activeApp) ? 'chat' : null
+  const hasChatModel = enabledModels.some((model) => !isNonChatModel(model))
+  const hasImageModel = enabledModels.some((model) => supportsImageGenerationEndpoint(model))
+  const wantedProvider = wanted === 'image' ? imageProvider.provider : chatProvider.provider
+  // Undefined until the provider row loads — never prompt on a not-yet-known state.
+  const wantedHasKey = wantedProvider ? wantedProvider.apiKeys.length > 0 : undefined
+  const wantedHasModel = wanted === 'image' ? hasImageModel : hasChatModel
+
+  useEffect(() => {
+    if (!wanted || kind || isLoading || wantedHasKey !== false || wantedHasModel) return
+    if (dismissedRef.current.has(wanted)) return
+    setApiKey('')
+    setKind(wanted)
+  }, [wanted, kind, isLoading, wantedHasKey, wantedHasModel])
+
+  const close = () => {
+    if (kind) dismissedRef.current.add(kind)
+    setKind(null)
+  }
+
+  const save = async () => {
+    const key = apiKey.trim()
+    if (!kind || !key) return
+    const target = kind === 'chat' ? chatProvider : imageProvider
+    setSaving(true)
+    try {
+      await target.addApiKey(key)
+      if (!target.provider?.isEnabled) await target.updateProvider({ isEnabled: true })
+      toast.success(t('a33.key_prompt.saved'))
+      setKind(null)
+    } catch {
+      toast.error(t('a33.key_prompt.save_failed'))
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <Dialog open={kind !== null} onOpenChange={(open) => !open && close()}>
+      <DialogContent className="sm:max-w-[460px]">
+        <DialogHeader>
+          <DialogTitle>{t(kind === 'image' ? 'a33.key_prompt.image_title' : 'a33.key_prompt.chat_title')}</DialogTitle>
+          <DialogDescription className="leading-6">
+            {t(kind === 'image' ? 'a33.key_prompt.image_description' : 'a33.key_prompt.chat_description')}
+          </DialogDescription>
+        </DialogHeader>
+        <Input
+          autoFocus
+          type="password"
+          value={apiKey}
+          placeholder={t('a33.key_prompt.placeholder')}
+          onChange={(event) => setApiKey(event.target.value)}
+          onKeyDown={(event) => event.key === 'Enter' && void save()}
+        />
+        <a className="text-link text-xs hover:underline" href="https://a33.club/keys" target="_blank" rel="noreferrer">
+          {t('a33.key_prompt.get_key')}
+        </a>
+        <DialogFooter>
+          <Button type="button" variant="outline" onClick={close}>
+            {t('a33.key_prompt.later')}
+          </Button>
+          <Button type="button" loading={saving} disabled={!apiKey.trim()} onClick={() => void save()}>
+            {t('a33.key_prompt.save')}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}

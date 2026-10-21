@@ -32,6 +32,7 @@ import { getSidebarDefaultLandingUrl } from '@renderer/utils/sidebar'
 import type { Tab } from '@shared/data/cache/cacheValueTypes'
 
 import { A33AutoSetup } from './a33/A33AutoSetup'
+import { A33KeyPrompt } from './a33/A33KeyPrompt'
 import { useAppUpdateHandler } from './hooks/useAppUpdateHandler'
 import { useAutoBackupEvents } from './hooks/useAutoBackupEvents'
 import { useTopicNamingErrorNotification } from './hooks/useTopicNamingErrorNotification'
@@ -137,6 +138,7 @@ export function MainWindowContent(): React.ReactElement {
           <DictationShortcutHost />
           <VoicePlaybackHost />
           {providerSetupStatus === 'pending' ? null : <PrivacyPolicyUpdateGate />}
+          {providerSetupStatus === 'pending' ? null : <A33KeyPrompt />}
         </MandatoryGateProvider>
       </SidebarShortcutRegistryProvider>
     </TabsProvider>

@@ -13,6 +13,8 @@ vi.mock('../onboarding/OnboardingPage', () => {
   return { default: () => <div data-testid="onboarding-page">onboarding</div> }
 })
 
+vi.mock('../a33/A33AutoSetup', () => ({ A33AutoSetup: () => null }))
+vi.mock('../a33/A33KeyPrompt', () => ({ A33KeyPrompt: () => null }))
 vi.mock('../privacy/PrivacyPolicyUpdateGate', () => ({
   PrivacyPolicyUpdateGate: () => <div data-testid="privacy-policy-gate">privacy-policy-gate</div>
 }))
