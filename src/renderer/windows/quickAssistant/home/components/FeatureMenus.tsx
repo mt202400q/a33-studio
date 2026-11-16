@@ -4,6 +4,7 @@ import { useImperativeHandle, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Scrollbar } from '@cherrystudio/ui'
+import { A33_HIDE_TRANSLATE } from '@renderer/utils/a33'
 import { cn } from '@renderer/utils/style'
 
 interface FeatureMenusProps {
@@ -41,11 +42,15 @@ const FeatureMenus = ({
           }
         }
       },
-      {
-        icon: <Languages className="size-4 text-foreground" />,
-        title: t('quickAssistant.feature.translate'),
-        onClick: () => text && setRoute('translate')
-      },
+      ...(A33_HIDE_TRANSLATE
+        ? []
+        : [
+            {
+              icon: <Languages className="size-4 text-foreground" />,
+              title: t('quickAssistant.feature.translate'),
+              onClick: () => text && setRoute('translate')
+            }
+          ]),
       {
         icon: <FileText className="size-4 text-foreground" />,
         title: t('quickAssistant.feature.summary'),

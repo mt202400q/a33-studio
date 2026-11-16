@@ -22,6 +22,7 @@ import { useProviders } from '@renderer/hooks/useProvider'
 import { useTheme } from '@renderer/hooks/useTheme'
 import { useTimer } from '@renderer/hooks/useTimer'
 import { toast } from '@renderer/services/toast'
+import { A33_HIDE_TRANSLATE } from '@renderer/utils/a33'
 import { scrollIntoView } from '@renderer/utils/dom'
 import { cn } from '@renderer/utils/style'
 import { TRANSLATE_PROMPT } from '@shared/ai/prompts'
@@ -293,43 +294,47 @@ const ModelSettings: FC<ModelSettingsProps> = ({
               </Button>
             )}
           </ModelSettingRow>
-          {showDividers && <SettingDivider />}
-          <ModelSettingRow
-            compact={compact}
-            id={compact ? undefined : 'setting-model-translate-model'}
-            rowRef={translateRowRef}
-            showFocusGuide={focus === 'translate' && showFocusGuide}
-            icon={<Languages size={16} className="lucide-custom shrink-0 text-foreground" />}
-            title={t('settings.models.translate_model')}
-            description={showDescription ? t('settings.models.translate_model_description') : undefined}>
-            <DefaultModelSelector
-              model={selectableTranslateModel}
-              providers={providers}
-              filter={translateModelFilter}
-              compact={compact}
-              onSelect={onSelectTranslate}
-              placeholder={t('settings.models.empty')}
-            />
-            {showSettingsButton && (
-              <>
-                <Button
-                  aria-label={t('settings.translate.title')}
-                  className="shrink-0"
-                  onClick={() => setActivePanel('translate')}
-                  size="icon-sm"
-                  variant="outline">
-                  <Settings2 size={16} />
-                </Button>
-                {translateModelPrompt !== TRANSLATE_PROMPT && (
-                  <Tooltip content={t('common.reset')}>
-                    <Button className="shrink-0" onClick={onResetTranslatePrompt} size="icon-sm" variant="outline">
-                      <RotateCcw size={16} />
+          {!A33_HIDE_TRANSLATE && (
+            <>
+              {showDividers && <SettingDivider />}
+              <ModelSettingRow
+                compact={compact}
+                id={compact ? undefined : 'setting-model-translate-model'}
+                rowRef={translateRowRef}
+                showFocusGuide={focus === 'translate' && showFocusGuide}
+                icon={<Languages size={16} className="lucide-custom shrink-0 text-foreground" />}
+                title={t('settings.models.translate_model')}
+                description={showDescription ? t('settings.models.translate_model_description') : undefined}>
+                <DefaultModelSelector
+                  model={selectableTranslateModel}
+                  providers={providers}
+                  filter={translateModelFilter}
+                  compact={compact}
+                  onSelect={onSelectTranslate}
+                  placeholder={t('settings.models.empty')}
+                />
+                {showSettingsButton && (
+                  <>
+                    <Button
+                      aria-label={t('settings.translate.title')}
+                      className="shrink-0"
+                      onClick={() => setActivePanel('translate')}
+                      size="icon-sm"
+                      variant="outline">
+                      <Settings2 size={16} />
                     </Button>
-                  </Tooltip>
+                    {translateModelPrompt !== TRANSLATE_PROMPT && (
+                      <Tooltip content={t('common.reset')}>
+                        <Button className="shrink-0" onClick={onResetTranslatePrompt} size="icon-sm" variant="outline">
+                          <RotateCcw size={16} />
+                        </Button>
+                      </Tooltip>
+                    )}
+                  </>
                 )}
-              </>
-            )}
-          </ModelSettingRow>
+              </ModelSettingRow>
+            </>
+          )}
           {showPaintingModel && (
             <>
               <SettingDivider />

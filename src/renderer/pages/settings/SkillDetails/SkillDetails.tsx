@@ -24,6 +24,7 @@ import { useSkillMutationsById } from '@renderer/hooks/resourceCatalog'
 import { useSkillLauncher } from '@renderer/hooks/useSkillLauncher'
 import { ipcApi } from '@renderer/ipc'
 import { toast } from '@renderer/services/toast'
+import { A33_HIDE_BUILTIN_AGENTS } from '@renderer/utils/a33'
 import { IpcError } from '@shared/ipc/errors/IpcError'
 import { skillErrorCodes } from '@shared/ipc/errors/skill'
 import type { SkillRemoteUpdateCheck } from '@shared/types/skill'
@@ -209,10 +210,12 @@ export function SkillDetails({ skillId }: { skillId: string }) {
         <div
           data-ui="skill-detail-actions"
           className="col-start-2 flex shrink-0 items-center gap-1.5 lg:col-start-3 lg:row-start-1">
-          <Button size="sm" onClick={() => void launchSkill(skill)} className="gap-1.5">
-            <Play size={13} />
-            {t('settings.skills.tryNow')}
-          </Button>
+          {!A33_HIDE_BUILTIN_AGENTS && (
+            <Button size="sm" onClick={() => void launchSkill(skill)} className="gap-1.5">
+              <Play size={13} />
+              {t('settings.skills.tryNow')}
+            </Button>
+          )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon-sm" aria-label={t('common.more')}>

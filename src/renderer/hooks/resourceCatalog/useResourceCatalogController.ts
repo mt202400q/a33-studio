@@ -17,6 +17,7 @@ import type {
   ResourceItem,
   ResourceType
 } from '@renderer/types/resourceCatalog'
+import { A33_HIDE_ASSISTANT_PRESETS } from '@renderer/utils/a33'
 import { serializeAssistantForExport } from '@renderer/utils/assistantTransfer'
 import { formatErrorMessageWithPrefix } from '@renderer/utils/error'
 import { buildCreateAgentCommand, buildCreateAssistantDto } from '@renderer/utils/resourceCatalog'
@@ -314,7 +315,8 @@ export function useResourceCatalogController(
       },
       onCreate: handleCreate,
       onImportAssistant: () => setAssistantImportOpen(true),
-      onOpenAssistantLibrary: isAssistantLibrary ? () => setAssistantLibraryOpen(true) : undefined,
+      onOpenAssistantLibrary:
+        isAssistantLibrary && !A33_HIDE_ASSISTANT_PRESETS ? () => setAssistantLibraryOpen(true) : undefined,
       onOpenSkillMarketplace: () => setSkillMarketplaceOpen(true),
       onOpenSystemSkills: () => setSystemSkillOpen(true),
       onCreateSkillWithAgent: onLaunchSkill ? handleCreateSkillWithAgent : undefined,

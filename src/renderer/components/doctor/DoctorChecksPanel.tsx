@@ -16,6 +16,7 @@ import {
 import type { DoctorController } from '@renderer/hooks/doctor'
 import { loggerService } from '@renderer/services/LoggerService'
 import { toast } from '@renderer/services/toast'
+import { A33_HIDE_BUILTIN_AGENTS } from '@renderer/utils/a33'
 import { DOCTOR_STATUS_LABEL_KEYS, formatDoctorReportForCopy } from '@renderer/utils/doctor'
 import { doctorCheckTitleKey } from '@shared/utils/doctor'
 
@@ -152,13 +153,15 @@ export function DoctorChecksPanel({ controller }: { readonly controller: DoctorC
           onClick={() => void controller.run('live')}>
           {t('settings.doctor.actions.run_network')}
         </Button>
-        <Button
-          variant="emphasis"
-          disabled={viewModel.status !== 'completed' || controller.isInteracting}
-          onClick={() => setAgentOpen(true)}>
-          <Sparkles className="size-4" aria-hidden />
-          {t('settings.doctor.agent.title')}
-        </Button>
+        {!A33_HIDE_BUILTIN_AGENTS && (
+          <Button
+            variant="emphasis"
+            disabled={viewModel.status !== 'completed' || controller.isInteracting}
+            onClick={() => setAgentOpen(true)}>
+            <Sparkles className="size-4" aria-hidden />
+            {t('settings.doctor.agent.title')}
+          </Button>
+        )}
       </DialogFooter>
       {agentOpen ? <DoctorAgentDialog subject={{ kind: 'global' }} open onOpenChange={setAgentOpen} /> : null}
     </div>

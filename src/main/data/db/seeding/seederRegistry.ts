@@ -1,13 +1,11 @@
 import type { ISeeder } from '../types'
+import { A33AssistantCleanupSeeder } from './seeders/a33AssistantCleanupSeeder'
 import { A33GenerateImageDefaultSeeder } from './seeders/a33GenerateImageDefaultSeeder'
 import { A33ImageAssistantSeeder } from './seeders/a33ImageAssistantSeeder'
 import { A33SidebarLayoutSeeder } from './seeders/a33SidebarLayoutSeeder'
 import { BrowserCapabilityUpgradeSeeder } from './seeders/browserCapabilityUpgradeSeeder'
 import { BuiltinMcpServerSeeder } from './seeders/builtinMcpServerSeeder'
 import { CherryAiDefaultModelSeeder } from './seeders/cherryaiDefaultModelSeeder'
-import { CherryAssistantInstructionsUpgradeSeeder } from './seeders/CherryAssistantInstructionsUpgradeSeeder'
-import { CherryAssistantSeeder } from './seeders/cherryAssistantSeeder'
-import { CherrySupportSeeder } from './seeders/cherrySupportSeeder'
 import { DefaultAssistantSeeder } from './seeders/defaultAssistantSeeder'
 import { KnowledgeBaseOrderSeeder } from './seeders/knowledgeBaseOrderSeeder'
 import { LegacyFileCleanupPolicySeeder } from './seeders/legacyFileCleanupPolicySeeder'
@@ -37,10 +35,9 @@ export const seeders: ISeeder[] = [
   new LegacyFileCleanupPolicySeeder(),
   new PresetProviderSeeder(),
   new CherryAiDefaultModelSeeder(),
-  new CherryAssistantSeeder(),
-  new CherryAssistantInstructionsUpgradeSeeder(),
-  new CherrySupportSeeder(),
+  // A33 build: the builtin Cherry Assistant / Support agents are not seeded; the cleanup trashes existing ones.
   new DefaultAssistantSeeder(),
+  new A33AssistantCleanupSeeder(),
   new A33ImageAssistantSeeder(),
   new A33GenerateImageDefaultSeeder(),
   new LongTextPastePreferenceUpgradeSeeder(),

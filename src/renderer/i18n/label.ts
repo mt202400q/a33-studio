@@ -205,7 +205,7 @@ export const getThemeModeLabelKey = (key: string): string => {
 
 const sidebarIconKeyMap = {
   assistants: 'title.chat',
-  agents: 'title.work',
+  agents: 'agent.sidebar_title',
   paintings: 'title.paintings',
   translate: 'translate.title',
   mini_app: 'miniApp.title',
@@ -228,7 +228,7 @@ export const getSidebarIconLabelKey = (key: string): string => {
 // chat carve brings feat's Sidebar; remove together with that.
 const sidebarFavoriteKeyMap = {
   assistants: 'assistants.title',
-  agents: 'title.work',
+  agents: 'agent.sidebar_title',
   store: 'assistants.presets.title',
   paintings: 'title.paintings',
   translate: 'translate.title',

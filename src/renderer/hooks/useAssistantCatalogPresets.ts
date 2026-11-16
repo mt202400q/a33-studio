@@ -1,3 +1,4 @@
+import { A33_HIDE_ASSISTANT_PRESETS } from '@renderer/utils/a33'
 import { matchesPinyinInitials } from '@renderer/utils/pinyin'
 import type { CreateAssistantDto } from '@shared/data/api/schemas/assistants'
 import { createUniqueModelId } from '@shared/data/types/model'
@@ -152,12 +153,12 @@ async function loadCatalogPresets(resourcesPath: string, language: string) {
 export function useAssistantCatalogPresets({ enabled = true }: { enabled?: boolean } = {}) {
   const { isLoading, items: presets } = useBundledCatalog({
     catalog: 'assistant presets',
-    enabled,
+    enabled: enabled && !A33_HIDE_ASSISTANT_PRESETS,
     load: loadCatalogPresets
   })
 
   return {
     isLoading,
-    presets
+    presets: A33_HIDE_ASSISTANT_PRESETS ? [] : presets
   }
 }

@@ -45,6 +45,7 @@ import { toast } from '@renderer/services/toast'
 import type { Assistant } from '@renderer/types/assistant'
 import type { ExportMessagesToObsidian } from '@renderer/types/messageExport'
 import type { Topic } from '@renderer/types/topic'
+import { A33_HIDE_TRANSLATE } from '@renderer/utils/a33'
 import { formatErrorMessageWithPrefix, isAbortError } from '@renderer/utils/error'
 import { createComposerRichClipboardContentFromParts } from '@renderer/utils/message/composerClipboard'
 import { getComposerTextFromParts } from '@renderer/utils/message/composerTokens'
@@ -867,9 +868,12 @@ export function useHomeMessageListProviderValue({
       deleteMessageGroup,
       deleteMessageGroupWithConfirm,
       regenerateMessage,
-      requestTranslationLanguages: normalInteractionsEnabled ? requestTranslationLanguages : undefined,
-      retryTranslationLanguages: normalInteractionsEnabled ? retryTranslationLanguages : undefined,
-      translateMessage,
+      requestTranslationLanguages:
+        normalInteractionsEnabled && !A33_HIDE_TRANSLATE ? requestTranslationLanguages : undefined,
+      retryTranslationLanguages:
+        normalInteractionsEnabled && !A33_HIDE_TRANSLATE ? retryTranslationLanguages : undefined,
+      // A33 build: no new translations; existing translation blocks can still be copied or removed.
+      translateMessage: A33_HIDE_TRANSLATE ? undefined : translateMessage,
       abortMessageTranslation,
       removeMessageTranslation,
       renderRegenerateModelPicker

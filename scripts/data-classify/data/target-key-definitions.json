@@ -315,8 +315,8 @@
           "type": "shortcut"
         },
         {
-          "id": "sidebar-shortcut:core.app:assistants",
-          "target": { "kind": "resource", "locator": { "providerId": "core.app", "resourceId": "assistants" } },
+          "id": "sidebar-shortcut:core.app:agents",
+          "target": { "kind": "resource", "locator": { "providerId": "core.app", "resourceId": "agents" } },
           "type": "shortcut"
         },
         {
@@ -327,11 +327,6 @@
         {
           "id": "sidebar-shortcut:core.app:video_chat",
           "target": { "kind": "resource", "locator": { "providerId": "core.app", "resourceId": "video_chat" } },
-          "type": "shortcut"
-        },
-        {
-          "id": "sidebar-shortcut:core.app:translate",
-          "target": { "kind": "resource", "locator": { "providerId": "core.app", "resourceId": "translate" } },
           "type": "shortcut"
         },
         {

@@ -36,6 +36,7 @@ import {
   isSerializedAiSdkUnsupportedFunctionalityError,
   isSerializedError
 } from '@renderer/types/error'
+import { A33_HIDE_BUILTIN_AGENTS } from '@renderer/utils/a33'
 import { formatAiSdkError, formatError, safeToString } from '@renderer/utils/error'
 import type { DiagnosisContext } from '@renderer/utils/errorDiagnosis'
 import type { DoctorNavigateTarget, DoctorSubjectRef } from '@shared/types/doctor'
@@ -586,7 +587,7 @@ const ErrorDetailContent: React.FC<ErrorDetailContentInternalProps> = ({
         </div>
       </ErrorDetailContainer>
 
-      {subject || showDiagnosticReportAction ? (
+      {(subject && !A33_HIDE_BUILTIN_AGENTS) || showDiagnosticReportAction ? (
         <div className="flex justify-end gap-2">
           {showDiagnosticReportAction ? (
             <Button variant="outline" disabled={doctorCloseBlocked} onClick={openDiagnosticReport}>
@@ -594,7 +595,7 @@ const ErrorDetailContent: React.FC<ErrorDetailContentInternalProps> = ({
               {t('error.diagnostic_report.action')}
             </Button>
           ) : null}
-          {subject ? (
+          {subject && !A33_HIDE_BUILTIN_AGENTS ? (
             <Button variant="emphasis" disabled={doctorCloseBlocked} onClick={() => setAgentOpen(true)}>
               <Sparkles size={14} />
               {t('settings.doctor.agent.title')}

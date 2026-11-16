@@ -21,6 +21,7 @@ import { useTheme } from '@renderer/hooks/useTheme'
 import { getSelectionDescriptionLabelKey } from '@renderer/i18n/label'
 import { ipcApi } from '@renderer/ipc'
 import { openExternalWebsite } from '@renderer/services/website'
+import { A33_HIDE_TRANSLATE } from '@renderer/utils/a33'
 import { isLinux, isMac, isWin } from '@renderer/utils/platform'
 import { cn } from '@renderer/utils/style'
 import type { SelectionFilterMode, SelectionTriggerMode } from '@shared/data/preference/preferenceTypes'
@@ -43,7 +44,10 @@ const SelectionAssistantSettings: FC = () => {
   const [actionWindowOpacity, setActionWindowOpacity] = usePreference('feature.selection.action_window_opacity')
   const [filterMode, setFilterMode] = usePreference('feature.selection.filter_mode')
   const [filterList, setFilterList] = usePreference('feature.selection.filter_list')
-  const [actionItems, setActionItems] = usePreference('feature.selection.action_items')
+  const [storedActionItems, setActionItems] = usePreference('feature.selection.action_items')
+  const actionItems = A33_HIDE_TRANSLATE
+    ? storedActionItems?.filter((item) => item.id !== 'translate')
+    : storedActionItems
 
   const isSupportedOS = isWin || isMac || isLinux
 

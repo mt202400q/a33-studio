@@ -13,6 +13,7 @@ import { ConversationPickerDialog, type ConversationPickerItem } from '@renderer
 import { useMutation } from '@renderer/data/hooks/useDataApi'
 import { type AssistantCatalogPreset, useAssistantCatalogPresets } from '@renderer/hooks/useAssistantCatalogPresets'
 import type { Assistant } from '@renderer/types/assistant'
+import { A33_HIDE_ASSISTANT_PRESETS } from '@renderer/utils/a33'
 import { buildCreateAssistantDto } from '@renderer/utils/resourceCatalog'
 import { cn } from '@renderer/utils/style'
 import { isNonChatModel } from '@shared/utils/model'
@@ -134,7 +135,7 @@ export function AssistantConversationPickerDialog({
   const filterOptions: { value: AssistantPickerTab | null; label: string }[] = [
     { value: null, label: t('common.all') },
     { value: 'mine', label: t('library.title') },
-    { value: 'catalog', label: t('assistants.presets.title') }
+    ...(A33_HIDE_ASSISTANT_PRESETS ? [] : [{ value: 'catalog' as const, label: t('assistants.presets.title') }])
   ]
   const toolbar = (
     <Popover open={filterOpen} onOpenChange={setFilterOpen}>

@@ -1,3 +1,5 @@
+import { A33_HIDE_TRANSLATE } from '@renderer/utils/a33'
+
 import type { SettingsSearchEntry } from '../settingsSearch/types'
 
 // Indexed rows = statically visible actionable rows (D8). The quick-model and
@@ -19,12 +21,16 @@ export const entries: SettingsSearchEntry[] = [
     groupKey: 'settings.model',
     descriptionKey: 'settings.models.quick_model.description'
   },
-  {
-    anchorId: 'translate-model',
-    titleKey: 'settings.models.translate_model',
-    groupKey: 'settings.model',
-    descriptionKey: 'settings.models.translate_model_description'
-  },
+  ...(A33_HIDE_TRANSLATE
+    ? []
+    : [
+        {
+          anchorId: 'translate-model',
+          titleKey: 'settings.models.translate_model',
+          groupKey: 'settings.model',
+          descriptionKey: 'settings.models.translate_model_description'
+        }
+      ]),
   {
     anchorId: 'painting-model',
     titleKey: 'settings.models.painting_model',

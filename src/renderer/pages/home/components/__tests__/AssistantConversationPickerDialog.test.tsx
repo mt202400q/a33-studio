@@ -80,6 +80,12 @@ vi.mock('react-i18next', () => ({
 
 import { AssistantConversationPickerDialog } from '../AssistantConversationPickerDialog'
 
+// Upstream behaviour under test; the A33 build hides it via A33_HIDE_ASSISTANT_PRESETS.
+vi.mock('@renderer/utils/a33', async (importOriginal) => ({
+  ...(await importOriginal<object>()),
+  A33_HIDE_ASSISTANT_PRESETS: false
+}))
+
 beforeAll(() => {
   globalThis.ResizeObserver = class {
     observe() {}

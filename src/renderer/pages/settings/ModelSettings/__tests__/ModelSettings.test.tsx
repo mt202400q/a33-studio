@@ -153,6 +153,12 @@ vi.mock('../TopicNamingSettings', () => {
 
 import ModelSettings from '../ModelSettings'
 
+// Upstream behaviour under test; the A33 build hides it via A33_HIDE_TRANSLATE.
+vi.mock('@renderer/utils/a33', async (importOriginal) => ({
+  ...(await importOriginal<object>()),
+  A33_HIDE_TRANSLATE: false
+}))
+
 const createModel = (providerId: string, apiModelId: string): Model => ({
   id: `${providerId}::${apiModelId}`,
   providerId,

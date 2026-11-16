@@ -11,6 +11,7 @@ import {
   SettingRowTitle
 } from '@renderer/components/SettingsPrimitives'
 import { useDefaultModel } from '@renderer/hooks/useModel'
+import { A33_HIDE_TRANSLATE } from '@renderer/utils/a33'
 import type { Model } from '@shared/data/types/model'
 
 interface ModelNavigationRowProps {
@@ -48,13 +49,17 @@ const SelectionActionModelSettings: FC = () => {
         onNavigate={() => void navigate({ to: '/settings/model', search: { focus: 'default' } })}
       />
       <SettingDivider />
-      <ModelNavigationRow
-        title={t('settings.models.translate_model')}
-        description={t('selection.settings.actions.models.translate_description')}
-        model={translateModel}
-        onNavigate={() => void navigate({ to: '/settings/model', search: { focus: 'translate' } })}
-      />
-      <SettingDivider />
+      {!A33_HIDE_TRANSLATE && (
+        <>
+          <ModelNavigationRow
+            title={t('settings.models.translate_model')}
+            description={t('selection.settings.actions.models.translate_description')}
+            model={translateModel}
+            onNavigate={() => void navigate({ to: '/settings/model', search: { focus: 'translate' } })}
+          />
+          <SettingDivider />
+        </>
+      )}
     </>
   )
 }

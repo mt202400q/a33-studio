@@ -37,6 +37,7 @@ import i18n from '@renderer/i18n/resolver'
 import { ipcApi } from '@renderer/ipc'
 import { toast } from '@renderer/services/toast'
 import { openExternalWebsite } from '@renderer/services/website'
+import { A33_HIDE_CHERRY_SERVICES } from '@renderer/utils/a33'
 import { cn } from '@renderer/utils/style'
 import { UpgradeChannel } from '@shared/data/preference/preferenceTypes'
 import { DOCTOR_OPEN_QUERY_PARAM, type DoctorPanel } from '@shared/utils/doctor'
@@ -358,13 +359,18 @@ const AboutSettings: FC = () => {
           actionLabel={t('settings.about.website.button')}
           onAction={() => onOpenWebsite('https://cherry-ai.com')}
         />
-        <Divider className="my-3" />
-        <AboutActionRow
-          icon={<MessageSquareText className="size-4.5" />}
-          title={t('settings.about.feedback.title')}
-          actionLabel={t('settings.about.feedback.button')}
-          onAction={() => setFeedbackOpen(true)}
-        />
+        {/* A33 build: feedback opens a Cherry Support agent session, which is not provided. */}
+        {!A33_HIDE_CHERRY_SERVICES && (
+          <>
+            <Divider className="my-3" />
+            <AboutActionRow
+              icon={<MessageSquareText className="size-4.5" />}
+              title={t('settings.about.feedback.title')}
+              actionLabel={t('settings.about.feedback.button')}
+              onAction={() => setFeedbackOpen(true)}
+            />
+          </>
+        )}
         <Divider className="my-3" />
         <AboutActionRow
           icon={<Building2 className="size-4.5" />}

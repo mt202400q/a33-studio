@@ -23,13 +23,25 @@ export function pickModel(models: readonly Model[], priority: readonly RegExp[])
  * Sidebar / launchpad apps hidden in the A33 build. 高级生图 (paintings) is folded into 生图 and stays
  * reachable from the 生图 page's 高级模式 button for one release.
  */
-export const A33_HIDDEN_SIDEBAR_APPS: ReadonlySet<string> = new Set(['knowledge', 'mini_app', 'paintings'])
+export const A33_HIDDEN_SIDEBAR_APPS: ReadonlySet<string> = new Set(['knowledge', 'mini_app', 'paintings', 'translate'])
 
 /**
  * Apps kept registered (other code resolves them) but left off the launchpad: 首页 is the launcher screen,
- * and 智能体 is reached through the launcher's Codex / Claude so the workspace only offers plain 对话.
+ * and the workspace offers 智能体 instead of plain 对话.
  */
-export const A33_LAUNCHPAD_HIDDEN_APPS: ReadonlySet<string> = new Set(['home', 'agents'])
+export const A33_LAUNCHPAD_HIDDEN_APPS: ReadonlySet<string> = new Set(['home', 'assistants'])
+
+/**
+ * The builtin Cherry Assistant / Support / Doctor agents are not provided: entry points that would
+ * (re)create them (agent-made tasks, skill try-out, Doctor agent) are hidden.
+ */
+export const A33_HIDE_BUILTIN_AGENTS = true
+
+/** The bundled Cherry 助手库 presets are not offered (picker, assistant library). */
+export const A33_HIDE_ASSISTANT_PRESETS = true
+
+/** Translation (page, message action, selection action, quick assistant, translate model) is removed. */
+export const A33_HIDE_TRANSLATE = true
 
 /** Settings sections hidden in the A33 build. */
 export const A33_HIDDEN_SETTINGS_ROUTES: ReadonlySet<string> = new Set([
@@ -50,7 +62,7 @@ export const A33_HIDDEN_SETTINGS_PROVIDER_IDS: ReadonlySet<string> = new Set([
 ])
 
 /**
- * Providers 编码搭档 (code tools) may configure CLIs with. The built-in API gateway and the CLIs'
+ * Providers 编码工具 (code tools) may configure CLIs with. The built-in API gateway and the CLIs'
  * own-login cards are hidden as well, so every CLI runs on the user's a33.club key.
  */
 export const A33_CODE_TOOL_PROVIDER_IDS: ReadonlySet<string> = new Set(['a33'])

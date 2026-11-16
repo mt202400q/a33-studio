@@ -6,6 +6,12 @@ import type { Model } from '@shared/data/types/model'
 
 import SelectionActionModelSettings from '../SelectionActionModelSettings'
 
+// Upstream behaviour under test; the A33 build hides it via A33_HIDE_TRANSLATE.
+vi.mock('@renderer/utils/a33', async (importOriginal) => ({
+  ...(await importOriginal<object>()),
+  A33_HIDE_TRANSLATE: false
+}))
+
 const modelState = vi.hoisted(() => ({
   defaultModel: {
     id: 'openai::gpt-4o',

@@ -91,6 +91,7 @@ import { useTheme } from '@renderer/hooks/useTheme'
 import { ipcApi } from '@renderer/ipc'
 import { openRoute } from '@renderer/services/mainWindowNavigation'
 import { toast } from '@renderer/services/toast'
+import { A33_HIDE_BUILTIN_AGENTS } from '@renderer/utils/a33'
 import { cn } from '@renderer/utils/style'
 import { AGENTS_MAX_LIMIT } from '@shared/data/api/schemas/agents'
 import { AGENT_WORKSPACE_TYPE } from '@shared/data/api/schemas/agentWorkspaces'
@@ -837,10 +838,13 @@ const TasksSettings: FC = () => {
                     <PencilLine />
                     {t('settings.scheduledTasks.manualCreate')}
                   </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => void createTaskWithAgent()}>
-                    <Bot />
-                    {t('settings.scheduledTasks.agentCreate')}
-                  </DropdownMenuItem>
+                  {/* A33 build: this opens a Cherry Assistant session, which is not provided. */}
+                  {!A33_HIDE_BUILTIN_AGENTS && (
+                    <DropdownMenuItem onSelect={() => void createTaskWithAgent()}>
+                      <Bot />
+                      {t('settings.scheduledTasks.agentCreate')}
+                    </DropdownMenuItem>
+                  )}
                 </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>

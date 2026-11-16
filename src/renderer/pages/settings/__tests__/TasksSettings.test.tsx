@@ -16,6 +16,12 @@ import type { ScheduledTaskEntity, ScheduledTaskListItem } from '@shared/data/ty
 
 import TasksSettings from '../TasksSettings'
 
+// Upstream behaviour under test; the A33 build hides it via A33_HIDE_BUILTIN_AGENTS.
+vi.mock('@renderer/utils/a33', async (importOriginal) => ({
+  ...(await importOriginal<object>()),
+  A33_HIDE_BUILTIN_AGENTS: false
+}))
+
 type TranslationFunction = (key: string, values?: Record<string, unknown>) => string
 
 const taskLogsMock = vi.hoisted(() => {

@@ -160,6 +160,12 @@ vi.mock('@cherrystudio/ui', () => ({
 
 import { SkillDetails } from '../SkillDetails'
 
+// Upstream behaviour under test; the A33 build hides it via A33_HIDE_BUILTIN_AGENTS.
+vi.mock('@renderer/utils/a33', async (importOriginal) => ({
+  ...(await importOriginal<object>()),
+  A33_HIDE_BUILTIN_AGENTS: false
+}))
+
 function createSkill(overrides: Partial<InstalledSkill> = {}): InstalledSkill {
   return {
     id: 'skill-1',

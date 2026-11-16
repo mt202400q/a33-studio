@@ -6,6 +6,7 @@ import { loggerService } from '@logger'
 import SelectionToolbarView from '@renderer/components/selection/SelectionToolbarView'
 import { useTimer } from '@renderer/hooks/useTimer'
 import { ipcApi, useIpcOn } from '@renderer/ipc'
+import { A33_HIDE_TRANSLATE } from '@renderer/utils/a33'
 import type { SelectionActionItem } from '@shared/data/preference/preferenceTypes'
 
 const logger = loggerService.withContext('SelectionToolbar')
@@ -52,7 +53,7 @@ const SelectionToolbar: FC = () => {
   const toolbarRef = useRef<HTMLDivElement>(null)
 
   const realActionItems = useMemo(() => {
-    return actionItems?.filter((item) => item.enabled)
+    return actionItems?.filter((item) => item.enabled && !(A33_HIDE_TRANSLATE && item.id === 'translate'))
   }, [actionItems])
 
   const selectedText = useRef('')

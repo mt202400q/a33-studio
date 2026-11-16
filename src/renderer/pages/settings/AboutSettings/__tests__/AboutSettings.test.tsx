@@ -71,6 +71,12 @@ vi.mock('@renderer/components/icons/LogoAvatar', () => ({
 
 import { AboutSettings } from '..'
 
+// Upstream behaviour under test; the A33 build hides it via A33_HIDE_CHERRY_SERVICES.
+vi.mock('@renderer/utils/a33', async (importOriginal) => ({
+  ...(await importOriginal<object>()),
+  A33_HIDE_CHERRY_SERVICES: false
+}))
+
 const REPOSITORY_URL = 'https://github.com/CherryHQ/cherry-studio'
 
 async function renderAboutSettings() {

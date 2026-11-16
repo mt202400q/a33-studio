@@ -6,6 +6,7 @@ import { ResourceCatalogView } from '@renderer/components/resourceCatalog/catalo
 import { SettingsContentBody } from '@renderer/components/SettingsPrimitives'
 import { useSkillLauncher } from '@renderer/hooks/useSkillLauncher'
 import type { ResourceItem } from '@renderer/types/resourceCatalog'
+import { A33_HIDE_BUILTIN_AGENTS } from '@renderer/utils/a33'
 
 type SkillScopeTab = 'all' | 'system' | 'builtin'
 
@@ -34,7 +35,7 @@ export function SkillsSettings() {
             onOpenSkill={(skill) =>
               void navigate({ to: '/settings/skills/$skillId', params: { skillId: skill.id }, search: { scope } })
             }
-            onLaunchSkill={launchSkill}
+            onLaunchSkill={A33_HIDE_BUILTIN_AGENTS ? undefined : launchSkill}
             filterResource={filterResource}
             allowColumnToggle
             toolbarFooter={
