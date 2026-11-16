@@ -6,6 +6,7 @@ import { useProviders } from '@renderer/hooks/useProvider'
 import { useSidebarShortcuts } from '@renderer/hooks/useSidebarShortcuts'
 import { loggerService } from '@renderer/services/LoggerService'
 import { toast } from '@renderer/services/toast'
+import { A33_CODE_TOOLS_A33_ONLY } from '@renderer/utils/a33'
 import { createSidebarShortcutTarget, SIDEBAR_SHORTCUT_PROVIDER_IDS } from '@renderer/utils/sidebar'
 import type { CodeCliId } from '@shared/data/preference/preferenceTypes'
 import {
@@ -128,8 +129,10 @@ export function useCodeCliPageViewProps(
     },
     [t]
   )
-  const showOwnLoginCard = LOGIN_CAPABLE_CLI_TOOLS.has(selectedCliTool)
-  const showGatewayCard = GATEWAY_CAPABLE_CLI_TOOLS.has(selectedCliTool) && !!apiGatewayBundle
+  // A33 build: CLIs run on the a33 provider only — no API-gateway or own-login cards.
+  const showOwnLoginCard = !A33_CODE_TOOLS_A33_ONLY && LOGIN_CAPABLE_CLI_TOOLS.has(selectedCliTool)
+  const showGatewayCard =
+    !A33_CODE_TOOLS_A33_ONLY && GATEWAY_CAPABLE_CLI_TOOLS.has(selectedCliTool) && !!apiGatewayBundle
   const prependedProviders = useMemo(
     () =>
       [showGatewayCard ? apiGatewayBundle?.provider : null, showOwnLoginCard ? OWN_LOGIN_PROVIDER : null].filter(

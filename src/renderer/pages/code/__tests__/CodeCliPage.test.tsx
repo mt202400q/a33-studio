@@ -724,7 +724,7 @@ describe('CodeCliPage', () => {
     expect(screen.getByRole('button', { name: 'remove tool' })).toBeInTheDocument()
   })
 
-  it('offers official login and Unified Gateway cards for Antigravity', () => {
+  it('A33 build: offers neither the official-login nor the Unified Gateway card', () => {
     mockProviders.splice(0, mockProviders.length)
     gatewayState.bundle = {
       provider: { id: CLI_API_GATEWAY_PROVIDER_ID, name: 'Unified Gateway' } as Provider,
@@ -736,8 +736,8 @@ describe('CodeCliPage', () => {
 
     render(<CodeCliPage />)
 
-    expect(screen.getByRole('button', { name: `toggle ${CLI_OWN_LOGIN_PROVIDER_ID}` })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: `toggle ${CLI_API_GATEWAY_PROVIDER_ID}` })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: `toggle ${CLI_OWN_LOGIN_PROVIDER_ID}` })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: `toggle ${CLI_API_GATEWAY_PROVIDER_ID}` })).not.toBeInTheDocument()
   })
 
   it('opens the config dialog instead of auto-selecting the first model when enabling an unconfigured provider', async () => {
@@ -985,7 +985,8 @@ describe('CodeCliPage', () => {
     expect(reorderProvidersMock).not.toHaveBeenCalled()
   })
 
-  it('launches through the unified gateway with the default model when no provider is selected', async () => {
+  it('A33 build: never falls back to the unified gateway, even when it is available', () => {
+    mockProviders.splice(0, mockProviders.length)
     const gatewayProvider = { id: CLI_API_GATEWAY_PROVIDER_ID, name: 'Unified Gateway' } as Provider
     const defaultModel = {
       id: 'anthropic::claude-new',
@@ -994,90 +995,15 @@ describe('CodeCliPage', () => {
       apiModelId: 'claude-new',
       name: 'Claude New'
     }
-    const ensureRunning = vi.fn().mockResolvedValue(undefined)
-    const getApiKey = vi.fn().mockResolvedValue('cs-sk-default')
-    gatewayState.bundle = { provider: gatewayProvider, apiKey: null, ensureRunning, getApiKey }
+    gatewayState.bundle = { provider: gatewayProvider, apiKey: null, ensureRunning: vi.fn(), getApiKey: vi.fn() }
     gatewayState.defaultModelId = defaultModel.id
     gatewayState.modelsById.set(defaultModel.id, defaultModel)
     mockCodeCliState({ selectedCliTool: CodeCli.OPEN_CODE })
 
     render(<CodeCliPage />)
 
-    const versionCard = screen.getByTestId('version-status-card')
-    expect(versionCard).toHaveAttribute('data-can-launch', 'true')
-    expect(versionCard).not.toHaveAttribute('data-launch-disabled-hint')
-
-    fireEvent.click(screen.getByRole('button', { name: 'start tool' }))
-    fireEvent.click(await screen.findByRole('button', { name: 'launch tool' }))
-
-    await waitFor(() => expect(getApiKey).toHaveBeenCalledOnce())
-    expect(ensureRunning).toHaveBeenCalledOnce()
-    expect(writeCliConfigDraftMock).toHaveBeenCalledWith({
-      cliTool: CodeCli.OPEN_CODE,
-      modelId: defaultModel.id,
-      configBlob: undefined,
-      writePrimaryModel: true,
-      gateway: { provider: gatewayProvider, apiKey: 'cs-sk-default' }
-    })
-    expect(ipcRequestMock).toHaveBeenCalledWith('code_cli.run', {
-      mode: 'normal',
-      cliTool: CodeCli.OPEN_CODE,
-      model: 'claude-new',
-      providerId: 'anthropic',
-      gateway: true,
-      directory: '/tmp/project',
-      terminal: undefined
-    })
-  })
-
-  it('launches through the unified gateway when the saved provider is no longer supported', async () => {
-    const user = userEvent.setup()
-    const gatewayProvider = { id: CLI_API_GATEWAY_PROVIDER_ID, name: 'Unified Gateway' } as Provider
-    const defaultModel = {
-      id: 'anthropic::claude-new',
-      providerId: 'anthropic',
-      modelId: 'claude-new',
-      apiModelId: 'claude-new',
-      name: 'Claude New'
-    }
-    const ensureRunning = vi.fn().mockResolvedValue(undefined)
-    const getApiKey = vi.fn().mockResolvedValue('cs-sk-default')
-    gatewayState.bundle = { provider: gatewayProvider, apiKey: null, ensureRunning, getApiKey }
-    gatewayState.defaultModelId = defaultModel.id
-    gatewayState.modelsById.set(defaultModel.id, defaultModel)
-    unsupportedProviderIds.add(provider.id)
-    mockCodeCliState({
-      providerConfigs: { [provider.id]: { modelId: 'anthropic::kimi-k2.5', config: {} } },
-      currentProviderId: provider.id
-    })
-
-    render(<CodeCliPage />)
-
-    const startButton = screen.getByRole('button', { name: 'start tool' })
-    expect(startButton).toBeEnabled()
-    expect(screen.queryByText('anthropic::kimi-k2.5')).not.toBeInTheDocument()
-
-    await user.click(startButton)
-    await user.click(await screen.findByRole('button', { name: 'launch tool' }))
-
-    await waitFor(() => expect(getApiKey).toHaveBeenCalledOnce())
-    expect(ensureRunning).toHaveBeenCalledOnce()
-    expect(writeCliConfigDraftMock).toHaveBeenCalledWith({
-      cliTool: CodeCli.CLAUDE_CODE,
-      modelId: defaultModel.id,
-      configBlob: undefined,
-      writePrimaryModel: true,
-      gateway: { provider: gatewayProvider, apiKey: 'cs-sk-default' }
-    })
-    expect(ipcRequestMock).toHaveBeenCalledWith('code_cli.run', {
-      mode: 'normal',
-      cliTool: CodeCli.CLAUDE_CODE,
-      model: 'claude-new',
-      providerId: 'anthropic',
-      gateway: true,
-      directory: '/tmp/project',
-      terminal: undefined
-    })
+    expect(screen.queryByRole('button', { name: `toggle ${CLI_API_GATEWAY_PROVIDER_ID}` })).not.toBeInTheDocument()
+    expect(screen.getByTestId('version-status-card')).not.toHaveAttribute('data-can-launch', 'true')
   })
 
   it('waits for provider loading before treating a saved provider as unsupported', () => {
@@ -1106,66 +1032,6 @@ describe('CodeCliPage', () => {
     render(<CodeCliPage />)
 
     expect(screen.getByRole('button', { name: 'start tool' })).toBeDisabled()
-  })
-
-  it('does not re-read CLI config after fallback gateway connection state updates', async () => {
-    const gatewayProvider = { id: CLI_API_GATEWAY_PROVIDER_ID, name: 'Unified Gateway' } as Provider
-    const defaultModel = {
-      id: 'anthropic::claude-new',
-      providerId: 'anthropic',
-      modelId: 'claude-new',
-      apiModelId: 'claude-new',
-      name: 'Claude New'
-    }
-    let resolveFirstRead!: (files: CliConfigFileDraft[]) => void
-    const pendingRead = new Promise<CliConfigFileDraft[]>(() => {})
-    readCliConfigFilesMock
-      .mockImplementationOnce(
-        () =>
-          new Promise<CliConfigFileDraft[]>((resolve) => {
-            resolveFirstRead = resolve
-          })
-      )
-      .mockReturnValue(pendingRead)
-    extractConnectionFromCliConfigDraftMock.mockReturnValue({ model: 'other-provider:other-model' })
-    cliConfigConnectionMatchesProviderMock.mockReturnValue(false)
-    gatewayState.bundle = {
-      provider: gatewayProvider,
-      apiKey: null,
-      ensureRunning: vi.fn(),
-      getApiKey: vi.fn()
-    }
-    gatewayState.defaultModelId = defaultModel.id
-    gatewayState.modelsById.set(defaultModel.id, defaultModel)
-    mockCodeCliState({ selectedCliTool: CodeCli.OPEN_CODE })
-
-    render(<CodeCliPage />)
-    expect(readCliConfigFilesMock).toHaveBeenCalledOnce()
-
-    resolveFirstRead(cliConfigFiles)
-    await waitFor(() => expect(extractConnectionFromCliConfigDraftMock).toHaveBeenCalledOnce())
-
-    expect(readCliConfigFilesMock).toHaveBeenCalledOnce()
-  })
-
-  it('opens unified gateway configuration when no routable default model is available', async () => {
-    const gatewayProvider = { id: CLI_API_GATEWAY_PROVIDER_ID, name: 'Unified Gateway' } as Provider
-    gatewayState.bundle = {
-      provider: gatewayProvider,
-      apiKey: null,
-      ensureRunning: vi.fn().mockResolvedValue(undefined),
-      getApiKey: vi.fn().mockResolvedValue('cs-sk-default')
-    }
-    mockCodeCliState({ selectedCliTool: CodeCli.OPEN_CODE })
-
-    render(<CodeCliPage />)
-
-    const startButton = screen.getByRole('button', { name: 'start tool' })
-    expect(startButton).toBeEnabled()
-    fireEvent.click(startButton)
-
-    expect(await screen.findByTestId('config-panel')).toHaveAttribute('data-provider-id', CLI_API_GATEWAY_PROVIDER_ID)
-    expect(screen.queryByRole('button', { name: 'launch tool' })).not.toBeInTheDocument()
   })
 
   it('shows the Anthropic Messages endpoint hint for Claude Code provider setup', () => {
@@ -1229,17 +1095,14 @@ describe('CodeCliPage', () => {
     expect(versionCard).not.toHaveAttribute('data-launch-disabled-hint')
   })
 
-  it('offers the own-login entry (and no selection hint) when no real providers exist', () => {
+  it('A33 build: shows the empty state instead of an own-login row when no a33 provider exists', () => {
     mockProviders.splice(0, mockProviders.length)
     mockCodeCliState()
 
     render(<CodeCliPage />)
 
-    // Login-capable tools always surface the virtual own-login row, so there is no empty state and
-    // the "select a provider" hint is suppressed (own-login is the only option, nothing to nag about).
-    expect(screen.queryByTestId('empty-config-list')).not.toBeInTheDocument()
-    expect(screen.getByText(`toggle ${CLI_OWN_LOGIN_PROVIDER_ID}`)).toBeInTheDocument()
-    expect(screen.getByTestId('version-status-card')).not.toHaveAttribute('data-launch-disabled-hint')
+    expect(screen.getByTestId('empty-config-list')).toBeInTheDocument()
+    expect(screen.queryByText(`toggle ${CLI_OWN_LOGIN_PROVIDER_ID}`)).not.toBeInTheDocument()
   })
 
   it('warns that credentials may remain when clearing the CLI config fails during tool removal', async () => {

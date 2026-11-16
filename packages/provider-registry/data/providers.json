@@ -12,6 +12,10 @@
         "openai-chat-completions": {
           "adapterFamily": "openai-compatible",
           "baseUrl": "https://a33.club"
+        },
+        "openai-responses": {
+          "adapterFamily": "openai",
+          "baseUrl": "https://a33.club"
         }
       },
       "id": "a33",
@@ -2801,5 +2805,5 @@
       "presetProviderId": "minimax"
     }
   ],
-  "version": "577812ce10c1518e"
+  "version": "59c9ba26de3eb9d0"
 }

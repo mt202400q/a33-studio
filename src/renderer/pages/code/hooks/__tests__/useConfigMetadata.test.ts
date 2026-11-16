@@ -46,6 +46,9 @@ const apiKeyProvider = {
   ...anthropicEndpoint
 } as unknown as Provider
 
+// A33 build: 编码搭档 only offers the a33 provider.
+const a33Provider: Provider = { ...apiKeyProvider, id: 'a33', name: 'A33' }
+
 // Login-based provider that still passes the endpoint-capability filter for Claude Code.
 const oauthProvider = {
   id: 'claude-code',
@@ -105,19 +108,20 @@ describe('useConfigMetadata.gatewayModelsById', () => {
 })
 
 describe('useConfigMetadata.filterProviders', () => {
-  it('drops login-based (OAuth/external-cli) providers while keeping api-key providers', () => {
+  it('A33 build: offers only the a33 provider, dropping login-based and other api-key providers', () => {
     const { result } = renderHook(() => useConfigMetadata(CodeCli.CLAUDE_CODE, []))
 
-    const filtered = result.current.filterProviders([oauthProvider, apiKeyProvider])
+    const filtered = result.current.filterProviders([oauthProvider, apiKeyProvider, a33Provider])
 
-    expect(filtered).toEqual([apiKeyProvider])
+    expect(filtered).toEqual([a33Provider])
   })
 
   it('filters providers with the requested CLI tool instead of the active one', () => {
     const { result } = renderHook(() => useConfigMetadata(CodeCli.CLAUDE_CODE, []))
 
-    expect(result.current.filterProvidersForTool(CodeCli.CLAUDE_CODE, [apiKeyProvider])).toEqual([apiKeyProvider])
-    expect(result.current.filterProvidersForTool(CodeCli.OPENAI_CODEX, [apiKeyProvider])).toEqual([])
+    // The fixture has only an Anthropic endpoint: it backs Claude Code but not Codex (Responses API).
+    expect(result.current.filterProvidersForTool(CodeCli.CLAUDE_CODE, [a33Provider])).toEqual([a33Provider])
+    expect(result.current.filterProvidersForTool(CodeCli.OPENAI_CODEX, [a33Provider])).toEqual([])
   })
 })
 

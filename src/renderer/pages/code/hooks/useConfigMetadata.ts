@@ -4,6 +4,7 @@ import { usePreference } from '@data/hooks/usePreference'
 import { useModels } from '@renderer/hooks/useModel'
 import { getProviderDisplayName } from '@renderer/hooks/useProvider'
 import { getClaudeContextModelId, hasClaudeDetailedModels } from '@renderer/pages/code/cliConfig'
+import { A33_CODE_TOOL_PROVIDER_IDS } from '@renderer/utils/a33'
 import type { CliProviderConfig } from '@shared/data/preference/preferenceTypes'
 import { isUniqueModelId, type Model, parseUniqueModelId } from '@shared/data/types/model'
 import type { Provider } from '@shared/data/types/provider'
@@ -54,7 +55,10 @@ export function useConfigMetadata(selectedCliTool: CodeCli, providers: Provider[
     // key/baseUrl to inject into the CLI config, and their "own login" is already surfaced by
     // the synthetic own-login card. `isLoginBasedProvider` keeps api-key-capable mixed providers.
     return filterFn
-      ? filterFn(providers).filter((p) => p.isEnabled && !isCherryAIProvider(p) && !isLoginBasedProvider(p))
+      ? filterFn(providers).filter(
+          (p) =>
+            p.isEnabled && !isCherryAIProvider(p) && !isLoginBasedProvider(p) && A33_CODE_TOOL_PROVIDER_IDS.has(p.id)
+        )
       : []
   }, [])
   const filterProviders = useCallback(
