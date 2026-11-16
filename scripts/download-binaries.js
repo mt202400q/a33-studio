@@ -496,17 +496,23 @@ function download(url, dest) {
   }
 }
 
+/**
+ * Windows zip extraction with the system bsdtar (Windows 10 1803+), by full path: a Git-for-Windows
+ * GNU tar earlier on PATH cannot read zip. Expand-Archive is avoided because a PowerShell 7 parent
+ * (GitHub's default `pwsh` step shell) leaks its Archive module into Windows PowerShell and breaks it.
+ */
+function extractZipOnWindows(archivePath, destDir) {
+  const tar = path.join(process.env.SystemRoot || 'C:\\Windows', 'System32', 'tar.exe')
+  execFileSync(tar, ['-xf', archivePath, '-C', destDir], { stdio: 'inherit' })
+}
+
 function extract(archivePath, archive, outputDir, pkg) {
   if (archive === 'zip') {
     if (process.platform === 'win32') {
       const tmpExtract = path.join(outputDir, '__extract_tmp')
       fs.mkdirSync(tmpExtract, { recursive: true })
       try {
-        execFileSync(
-          'powershell',
-          ['-NoProfile', '-Command', `Expand-Archive -Path '${archivePath}' -DestinationPath '${tmpExtract}' -Force`],
-          { stdio: 'inherit' }
-        )
+        extractZipOnWindows(archivePath, tmpExtract)
         for (const b of pkg.binaries) {
           const src = pkg.strip ? path.join(tmpExtract, pkg.strip, b) : path.join(tmpExtract, b)
           fs.copyFileSync(src, path.join(outputDir, b))
@@ -526,11 +532,7 @@ function extract(archivePath, archive, outputDir, pkg) {
     fs.rmSync(destDir, { recursive: true, force: true })
     fs.mkdirSync(destDir, { recursive: true })
     if (process.platform === 'win32') {
-      execFileSync(
-        'powershell',
-        ['-NoProfile', '-Command', `Expand-Archive -Path '${archivePath}' -DestinationPath '${destDir}' -Force`],
-        { stdio: 'inherit' }
-      )
+      extractZipOnWindows(archivePath, destDir)
     } else {
       execFileSync('unzip', ['-o', '-q', archivePath, '-d', destDir], { stdio: 'inherit' })
     }
