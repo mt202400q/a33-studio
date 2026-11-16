@@ -6,7 +6,7 @@ import { application } from '@application'
 import { loggerService } from '@logger'
 import { a33AccountErrorCodes } from '@shared/ipc/errors/a33Account'
 import { IpcError } from '@shared/ipc/errors/IpcError'
-import type { A33AccountStatus, A33LoginResult } from '@shared/ipc/schemas/a33Account'
+import type { A33AccountStatus, A33ApiKeys, A33KeyKind, A33LoginResult } from '@shared/ipc/schemas/a33Account'
 
 const logger = loggerService.withContext('A33Account')
 
@@ -30,6 +30,7 @@ type LoginResponse = TokenResponse | { requires_2fa: true; temp_token: string; u
 interface A33Group {
   id: number
   platform: string
+  name?: string
 }
 
 interface A33ApiKey {
@@ -155,40 +156,70 @@ function toIpcError(error: unknown, invalidCodeMeans2fa = false): unknown {
   return new Error(error.message)
 }
 
-/** An active key on an Anthropic-platform group, creating one if the account has none. */
-async function findOrCreateChatKey(): Promise<string | undefined> {
-  const groupsData = await authed<A33Group[] | { items?: A33Group[] }>('/api/v1/groups/available')
-  const groups = Array.isArray(groupsData) ? groupsData : (groupsData.items ?? [])
-  const chatGroupIds = new Set(groups.filter((g) => g.platform === CHAT_GROUP_PLATFORM).map((g) => g.id))
-  const keys = await authed<{ items: A33ApiKey[] }>('/api/v1/keys?status=active&page_size=100')
-  const existing = keys.items.find(
-    (k) => k.group?.platform === CHAT_GROUP_PLATFORM || (k.group_id !== null && chatGroupIds.has(k.group_id))
-  )
-  if (existing) return existing.key
-
-  const groupId = chatGroupIds.values().next().value
-  if (groupId === undefined) return undefined
-  const created = await authed<A33ApiKey>('/api/v1/keys', {
-    method: 'POST',
-    body: { name: KEY_NAME, group_id: groupId }
-  })
-  return created.key
+/**
+ * Which a33.club groups serve each key kind — the split the a33.club key dialog uses: text groups run on
+ * the Anthropic platform, 生图 on OpenAI, and 生视频 is its own named group (on the Grok platform).
+ */
+const KEY_KIND_GROUPS: Record<A33KeyKind, (group: A33Group) => boolean> = {
+  chat: (group) => group.platform === CHAT_GROUP_PLATFORM,
+  image: (group) => group.platform === 'openai',
+  video: (group) => (group.name ?? '').includes('视频') || group.platform === 'grok'
+}
+const KEY_NAMES: Record<A33KeyKind, string> = {
+  chat: KEY_NAME,
+  image: `${KEY_NAME} 生图`,
+  video: `${KEY_NAME} 生视频`
 }
 
-async function finishLogin(tokens: TokenResponse, wantApiKey: boolean): Promise<A33LoginResult> {
+/**
+ * For each requested kind, an active key of the account on a matching group, creating one on the first
+ * matching group when the account has none. Kinds with no matching group are left out.
+ */
+export async function provisionKeys(input: { keyKinds: A33KeyKind[] }): Promise<A33ApiKeys> {
+  if (input.keyKinds.length === 0) return {}
+  const groupsData = await a33Request<A33Group[] | { items?: A33Group[] }>('/api/v1/groups/available')
+  const groups = Array.isArray(groupsData) ? groupsData : (groupsData.items ?? [])
+  const groupById = new Map(groups.map((group) => [group.id, group]))
+  const keys = (await a33Request<{ items: A33ApiKey[] }>('/api/v1/keys?status=active&page_size=100')).items
+
+  const result: A33ApiKeys = {}
+  for (const kind of input.keyKinds) {
+    const matches = KEY_KIND_GROUPS[kind]
+    const existing = keys.find((key) => {
+      const group = key.group ?? (key.group_id === null ? undefined : groupById.get(key.group_id))
+      return !!group && matches(group)
+    })
+    if (existing) {
+      result[kind] = existing.key
+      continue
+    }
+    const group = groups.find(matches)
+    if (!group) continue
+    const created = await a33Request<A33ApiKey>('/api/v1/keys', {
+      method: 'POST',
+      body: { name: KEY_NAMES[kind], group_id: group.id }
+    })
+    result[kind] = created.key
+  }
+  return result
+}
+
+async function finishLogin(tokens: TokenResponse, keyKinds: A33KeyKind[]): Promise<A33LoginResult> {
   await writeSession({ accessToken: tokens.access_token, refreshToken: tokens.refresh_token })
-  if (!wantApiKey) return { status: 'signed_in' }
   try {
-    const apiKey = await findOrCreateChatKey()
-    return apiKey ? { status: 'signed_in', apiKey } : { status: 'signed_in' }
+    return { status: 'signed_in', apiKeys: await provisionKeys({ keyKinds }) }
   } catch (error) {
-    // Signed in either way; the key prompt still covers a missing key.
-    logger.warn('Could not provision an a33 API key after login', error as Error)
-    return { status: 'signed_in' }
+    // Signed in either way; the client retries later and the key prompts still cover a missing key.
+    logger.warn('Could not provision a33 API keys after login', error as Error)
+    return { status: 'signed_in', apiKeys: {} }
   }
 }
 
-export async function login(input: { email: string; password: string; wantApiKey: boolean }): Promise<A33LoginResult> {
+export async function login(input: {
+  email: string
+  password: string
+  keyKinds: A33KeyKind[]
+}): Promise<A33LoginResult> {
   let result: LoginResponse
   try {
     result = await request<LoginResponse>('/api/v1/auth/login', {
@@ -201,13 +232,13 @@ export async function login(input: { email: string; password: string; wantApiKey
   if ('requires_2fa' in result) {
     return { status: 'requires_2fa', tempToken: result.temp_token, maskedEmail: result.user_email_masked }
   }
-  return finishLogin(result, input.wantApiKey)
+  return finishLogin(result, input.keyKinds)
 }
 
 export async function loginWith2fa(input: {
   tempToken: string
   code: string
-  wantApiKey: boolean
+  keyKinds: A33KeyKind[]
 }): Promise<A33LoginResult> {
   let tokens: TokenResponse
   try {
@@ -218,7 +249,7 @@ export async function loginWith2fa(input: {
   } catch (error) {
     throw toIpcError(error, true)
   }
-  return finishLogin(tokens, input.wantApiKey)
+  return finishLogin(tokens, input.keyKinds)
 }
 
 export async function logout(): Promise<void> {

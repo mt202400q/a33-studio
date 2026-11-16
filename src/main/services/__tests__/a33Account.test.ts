@@ -26,6 +26,7 @@ type Account = typeof AccountModule
 interface Group {
   id: number
   platform: string
+  name?: string
 }
 interface Key {
   key: string
@@ -93,7 +94,7 @@ function createServer() {
     if (pathname === '/api/v1/groups/available') return ok(state.groups)
     if (pathname === '/api/v1/keys' && init.method === 'POST') {
       state.createdKeys.push(body)
-      return ok({ key: 'sk-created', group_id: body.group_id })
+      return ok({ key: `sk-created-${body.group_id}`, group_id: body.group_id })
     }
     if (pathname === '/api/v1/keys') return ok({ items: state.keys, total: state.keys.length })
     return fail(404, { code: 404, message: 'not found' })
@@ -121,7 +122,7 @@ afterEach(async () => {
   await rm(dir, { recursive: true, force: true })
 })
 
-const signIn = () => account.login({ email: 'user@x.com', password: 'secret', wantApiKey: false })
+const signIn = () => account.login({ email: 'user@x.com', password: 'secret', keyKinds: [] })
 
 describe('a33 account session', () => {
   it('reports the wallet overview after signing in', async () => {
@@ -166,7 +167,7 @@ describe('a33 account session', () => {
   })
 
   it('maps a wrong password to the invalid-credentials code', async () => {
-    const attempt = account.login({ email: 'user@x.com', password: 'wrong', wantApiKey: false })
+    const attempt = account.login({ email: 'user@x.com', password: 'wrong', keyKinds: [] })
 
     // `code` is what crosses IPC; instanceof would compare against a pre-resetModules class copy.
     await expect(attempt).rejects.toMatchObject({ code: a33AccountErrorCodes.INVALID_CREDENTIALS })
@@ -180,11 +181,12 @@ describe('a33 account session', () => {
     expect(challenge).toEqual({ status: 'requires_2fa', tempToken: 'tmp_1', maskedEmail: 'u***@x.com' })
     expect((await account.getAccountStatus()).signedIn).toBe(false)
 
-    await expect(account.loginWith2fa({ tempToken: 'tmp_1', code: '000000', wantApiKey: false })).rejects.toMatchObject(
-      { code: a33AccountErrorCodes.INVALID_2FA_CODE }
-    )
-    expect(await account.loginWith2fa({ tempToken: 'tmp_1', code: '123456', wantApiKey: false })).toEqual({
-      status: 'signed_in'
+    await expect(account.loginWith2fa({ tempToken: 'tmp_1', code: '000000', keyKinds: [] })).rejects.toMatchObject({
+      code: a33AccountErrorCodes.INVALID_2FA_CODE
+    })
+    expect(await account.loginWith2fa({ tempToken: 'tmp_1', code: '123456', keyKinds: [] })).toEqual({
+      status: 'signed_in',
+      apiKeys: {}
     })
     expect((await account.getAccountStatus()).signedIn).toBe(true)
   })
@@ -197,38 +199,66 @@ describe('a33 account session', () => {
   })
 })
 
-describe('a33 API key after login', () => {
-  const loginWantingKey = () => account.login({ email: 'user@x.com', password: 'secret', wantApiKey: true })
+describe('a33 API keys after login', () => {
+  const groups: Group[] = [
+    { id: 1, platform: 'openai', name: '生图' },
+    { id: 2, platform: 'anthropic', name: '全模型' },
+    { id: 3, platform: 'grok', name: '生视频' }
+  ]
+  const loginFor = (keyKinds: ('chat' | 'image' | 'video')[]) =>
+    account.login({ email: 'user@x.com', password: 'secret', keyKinds })
 
-  it('reuses an active key on an Anthropic group, never a key from another platform', async () => {
-    server.state.groups = [
-      { id: 1, platform: 'openai' },
-      { id: 2, platform: 'anthropic' }
-    ]
+  it("binds each kind to a key of that kind's group, never to another kind's key", async () => {
+    server.state.groups = groups
     server.state.keys = [
-      { key: 'sk-openai', group_id: 1 },
-      { key: 'sk-anthropic', group_id: 2 }
+      { key: 'sk-image', group_id: 1 },
+      { key: 'sk-video', group_id: 3 },
+      { key: 'sk-chat', group_id: 2 }
     ]
 
-    expect(await loginWantingKey()).toEqual({ status: 'signed_in', apiKey: 'sk-anthropic' })
+    expect(await loginFor(['chat', 'image', 'video'])).toEqual({
+      status: 'signed_in',
+      apiKeys: { chat: 'sk-chat', image: 'sk-image', video: 'sk-video' }
+    })
     expect(server.state.createdKeys).toEqual([])
   })
 
-  it('creates a key on an Anthropic group when the account has none', async () => {
-    server.state.groups = [
-      { id: 1, platform: 'openai' },
-      { id: 2, platform: 'anthropic' }
+  it('only looks up the kinds asked for, so providers that already have a key are left alone', async () => {
+    server.state.groups = groups
+    server.state.keys = [
+      { key: 'sk-image', group_id: 1 },
+      { key: 'sk-chat', group_id: 2 }
     ]
-    server.state.keys = [{ key: 'sk-openai', group_id: 1 }]
 
-    expect(await loginWantingKey()).toEqual({ status: 'signed_in', apiKey: 'sk-created' })
+    expect(await loginFor(['image'])).toEqual({ status: 'signed_in', apiKeys: { image: 'sk-image' } })
+  })
+
+  it('creates a key on a matching group when the account has none of that kind', async () => {
+    server.state.groups = groups
+    server.state.keys = [{ key: 'sk-chat', group_id: 2 }]
+
+    expect(await loginFor(['chat', 'image'])).toEqual({
+      status: 'signed_in',
+      apiKeys: { chat: 'sk-chat', image: 'sk-created-1' }
+    })
+    expect(server.state.createdKeys).toEqual([{ name: 'A33 Studio 生图', group_id: 1 }])
+  })
+
+  it('still signs in, leaving out kinds the account has no group for', async () => {
+    server.state.groups = [groups[1]]
+
+    expect(await loginFor(['chat', 'image', 'video'])).toEqual({
+      status: 'signed_in',
+      apiKeys: { chat: 'sk-created-2' }
+    })
     expect(server.state.createdKeys).toEqual([{ name: 'A33 Studio', group_id: 2 }])
   })
 
-  it('still signs in without a key when no Anthropic group is available', async () => {
-    server.state.groups = [{ id: 1, platform: 'openai' }]
+  it('tops up keys for an existing session without signing in again', async () => {
+    await signIn()
+    server.state.groups = groups
+    server.state.keys = [{ key: 'sk-video', group_id: 3 }]
 
-    expect(await loginWantingKey()).toEqual({ status: 'signed_in' })
-    expect(server.state.createdKeys).toEqual([])
+    expect(await account.provisionKeys({ keyKinds: ['video'] })).toEqual({ video: 'sk-video' })
   })
 })
