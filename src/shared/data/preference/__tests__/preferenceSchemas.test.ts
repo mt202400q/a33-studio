@@ -79,7 +79,7 @@ describe('DefaultPreferences', () => {
     ]
     expect(DefaultPreferences.default['ui.sidebar.favorites']).toEqual(legacyFavorites)
 
-    // A33 build: visible apps pinned common-first, the home page leading so startup lands on it.
+    // A33 build: visible apps pinned common-first, 首页 leading; no 智能体 (reached via the launcher's Codex / Claude).
     const sidebarShortcutsDefault: PreferenceSchemas['default']['ui.sidebar_shortcut'] = [
       ['core.app', 'home'],
       ['core.app', 'assistants'],
@@ -88,8 +88,7 @@ describe('DefaultPreferences', () => {
       ['core.app', 'translate'],
       ['core.app', 'files'],
       ['core.app', 'notes'],
-      ['core.app', 'code_tools'],
-      ['core.app', 'agents']
+      ['core.app', 'code_tools']
     ].map(([providerId, resourceId]) => {
       const target: SidebarShortcutTarget = {
         kind: 'resource',

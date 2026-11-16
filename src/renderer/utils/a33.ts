@@ -25,6 +25,12 @@ export function pickModel(models: readonly Model[], priority: readonly RegExp[])
  */
 export const A33_HIDDEN_SIDEBAR_APPS: ReadonlySet<string> = new Set(['knowledge', 'mini_app', 'paintings'])
 
+/**
+ * Apps kept registered (other code resolves them) but left off the launchpad: 首页 is the launcher screen,
+ * and 智能体 is reached through the launcher's Codex / Claude so the workspace only offers plain 对话.
+ */
+export const A33_LAUNCHPAD_HIDDEN_APPS: ReadonlySet<string> = new Set(['home', 'agents'])
+
 /** Settings sections hidden in the A33 build. */
 export const A33_HIDDEN_SETTINGS_ROUTES: ReadonlySet<string> = new Set([
   '/settings/local-models',

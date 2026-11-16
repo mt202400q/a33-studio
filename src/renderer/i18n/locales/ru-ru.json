@@ -158,6 +158,7 @@
   "a33.home.account.usage_label": "Расход лимита",
   "a33.home.account.usage_ratio": "Использовано {{used}} · осталось {{remaining}}",
   "a33.home.account.used": "Использовано",
+  "a33.home.agent_capability": "Может читать и записывать файлы и выполнять команды",
   "a33.home.brand_name": "AI 教父",
   "a33.home.brand_tagline": "A33 DESKTOP",
   "a33.home.claude.description": "Глубоко думать, легко создавать.",

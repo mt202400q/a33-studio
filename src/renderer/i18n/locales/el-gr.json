@@ -158,6 +158,7 @@
   "a33.home.account.usage_label": "Χρήση πιστώματος",
   "a33.home.account.usage_ratio": "{{used}} σε χρήση · {{remaining}} απομένει",
   "a33.home.account.used": "Χρησιμοποιήθηκε",
+  "a33.home.agent_capability": "Μπορεί να διαβάζει και να γράφει αρχεία και να εκτελεί εντολές",
   "a33.home.brand_name": "AI 教父",
   "a33.home.brand_tagline": "A33 DESKTOP",
   "a33.home.claude.description": "Σκέψου σε βάθος, δημιούργησε εύκολα.",

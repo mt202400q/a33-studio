@@ -1,4 +1,4 @@
-import { ArrowUpRight, ChevronRight, LayoutGrid, RefreshCw, Settings, Terminal } from 'lucide-react'
+import { ArrowUpRight, ChevronRight, FolderCog, LayoutGrid, RefreshCw, Settings, Terminal } from 'lucide-react'
 import { type ReactNode, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -79,6 +79,7 @@ export default function A33HomePage() {
               icon={<Terminal className="size-5 text-foreground" />}
               title={t('a33.home.codex.title')}
               description={t('a33.home.codex.description')}
+              capability={t('a33.home.agent_capability')}
               action={t('a33.home.codex.open')}
               onOpen={() => showA33Screen({ kind: 'agent', agent: 'codex' })}
             />
@@ -87,6 +88,7 @@ export default function A33HomePage() {
               tint={ClaudeIcon?.colorPrimary}
               title={t('a33.home.claude.title')}
               description={t('a33.home.claude.description')}
+              capability={t('a33.home.agent_capability')}
               action={t('a33.home.claude.open')}
               onOpen={() => showA33Screen({ kind: 'agent', agent: 'claude' })}
             />
@@ -113,11 +115,13 @@ interface AgentCardProps {
   tint?: string
   title: string
   description: string
+  /** What sets these apart from plain 对话: they act on the computer. */
+  capability: string
   action: string
   onOpen: () => void
 }
 
-function AgentCard({ icon, tint, title, description, action, onOpen }: AgentCardProps) {
+function AgentCard({ icon, tint, title, description, capability, action, onOpen }: AgentCardProps) {
   return (
     <button
       type="button"
@@ -132,6 +136,10 @@ function AgentCard({ icon, tint, title, description, action, onOpen }: AgentCard
         {title}
       </span>
       <span className="mt-1 text-muted-foreground text-sm">{description}</span>
+      <span className="mt-1.5 flex items-center gap-1 text-foreground-tertiary text-xs">
+        <FolderCog className="size-3.5" />
+        {capability}
+      </span>
       <span className="mt-[clamp(10px,2.4vh,28px)] flex items-center justify-between font-medium text-card-foreground text-sm">
         {action}
         <ArrowUpRight className="size-4 text-muted-foreground transition-[color,transform] duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-foreground motion-reduce:transform-none" />

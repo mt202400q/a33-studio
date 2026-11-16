@@ -348,11 +348,6 @@
           "id": "sidebar-shortcut:core.app:code_tools",
           "target": { "kind": "resource", "locator": { "providerId": "core.app", "resourceId": "code_tools" } },
           "type": "shortcut"
-        },
-        {
-          "id": "sidebar-shortcut:core.app:agents",
-          "target": { "kind": "resource", "locator": { "providerId": "core.app", "resourceId": "agents" } },
-          "type": "shortcut"
         }
       ],
       "status": "classified",

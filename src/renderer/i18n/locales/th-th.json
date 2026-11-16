@@ -158,6 +158,7 @@
   "a33.home.account.usage_label": "การใช้วงเงิน",
   "a33.home.account.usage_ratio": "ใช้ไป {{used}} · คงเหลือ {{remaining}}",
   "a33.home.account.used": "ใช้ไปแล้ว",
+  "a33.home.agent_capability": "อ่านและเขียนไฟล์ รวมถึงรันคำสั่งได้",
   "a33.home.brand_name": "AI 教父",
   "a33.home.brand_tagline": "A33 DESKTOP",
   "a33.home.claude.description": "คิดอย่างลึกซึ้ง สร้างสรรค์อย่างง่ายดาย",

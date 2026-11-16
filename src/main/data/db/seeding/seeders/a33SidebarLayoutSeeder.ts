@@ -14,8 +14,9 @@ export class A33SidebarLayoutSeeder implements ISeeder {
   readonly name = 'a33SidebarLayout'
   readonly description = 'Reset the sidebar shortcuts to the A33 default layout once'
   readonly executionPolicy = 'run-on-change' as const
-  // 2: 图库 moved off the sidebar; 3: 生图 is its own page instead of a chat assistant; 4: 生视频 page; 5: 首页 first
-  readonly version = '5'
+  // 2: 图库 moved off the sidebar; 3: 生图 is its own page instead of a chat assistant; 4: 生视频 page; 5: 首页 first;
+  // 6: 智能体 dropped — agents are reached through the launcher's Codex / Claude, the workspace keeps plain 对话
+  readonly version = '6'
 
   run(db: DbType): void {
     const value = DefaultPreferences.default[SIDEBAR_SHORTCUT_KEY]

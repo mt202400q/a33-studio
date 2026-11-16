@@ -158,6 +158,7 @@
   "a33.home.account.usage_label": "Mức sử dụng hạn mức",
   "a33.home.account.usage_ratio": "Đã dùng {{used}} · còn {{remaining}}",
   "a33.home.account.used": "Đã dùng",
+  "a33.home.agent_capability": "Có thể đọc, ghi tệp và chạy lệnh",
   "a33.home.brand_name": "AI 教父",
   "a33.home.brand_tagline": "A33 DESKTOP",
   "a33.home.claude.description": "Suy nghĩ sâu, sáng tạo dễ dàng.",

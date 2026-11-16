@@ -6,7 +6,7 @@ import {
 } from '@shared/data/preference/preferenceTypes'
 import { CONVERSATION_ROUTES, conversationRouteUrl } from '@shared/utils/conversationRoute'
 
-import { A33_HIDDEN_SIDEBAR_APPS } from './a33'
+import { A33_HIDDEN_SIDEBAR_APPS, A33_LAUNCHPAD_HIDDEN_APPS } from './a33'
 
 /**
  * Context passed to sidebar navigation handlers. Carries per-call state the
@@ -411,8 +411,7 @@ export function getOrderedLaunchpadApps(stored: readonly string[] | undefined): 
     }
   }
 
-  // A33 build: 首页 is the launcher screen, reached from the sidebar rather than a launchpad tile.
-  return ordered.filter((id) => id !== 'home')
+  return ordered.filter((id) => !A33_LAUNCHPAD_HIDDEN_APPS.has(id))
 }
 
 /**

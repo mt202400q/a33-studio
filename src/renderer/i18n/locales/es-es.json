@@ -158,6 +158,7 @@
   "a33.home.account.usage_label": "Uso del crédito",
   "a33.home.account.usage_ratio": "{{used}} usado · {{remaining}} disponible",
   "a33.home.account.used": "Usado",
+  "a33.home.agent_capability": "Puede leer y escribir archivos y ejecutar comandos",
   "a33.home.brand_name": "AI 教父",
   "a33.home.brand_tagline": "A33 DESKTOP",
   "a33.home.claude.description": "Piensa a fondo, crea con facilidad.",

@@ -246,7 +246,7 @@ describe('LaunchpadPage', () => {
 
   it('orders app tiles by the launchpad app order, appending the rest canonically', () => {
     // Launchpad app order is independent of the sidebar favorites order.
-    mocks.appOrder = ['translate', 'assistants', 'agents']
+    mocks.appOrder = ['translate', 'assistants', 'files']
     mocks.sidebarFavorites = [appFavorite('assistants')]
 
     render(<LaunchpadPage />)
@@ -274,7 +274,7 @@ describe('LaunchpadPage', () => {
   })
 
   it('sorts every app tile and persists to the launchpad app order, not the sidebar favorites', () => {
-    mocks.appOrder = ['translate', 'assistants', 'agents']
+    mocks.appOrder = ['translate', 'assistants', 'files']
 
     render(<LaunchpadPage />)
 
@@ -284,7 +284,7 @@ describe('LaunchpadPage', () => {
     expect(systemSortable.items.map((item: { id: string }) => item.id).slice(0, 3)).toEqual([
       'translate',
       'assistants',
-      'agents'
+      'files'
     ])
 
     act(() => {
@@ -292,7 +292,7 @@ describe('LaunchpadPage', () => {
     })
 
     const [persisted] = mocks.setAppOrder.mock.calls.at(-1) as unknown as [SidebarAppId[]]
-    expect(persisted.slice(0, 3)).toEqual(['assistants', 'agents', 'translate'])
+    expect(persisted.slice(0, 3)).toEqual(['assistants', 'files', 'translate'])
     expect(persisted).toHaveLength(systemSortable.items.length)
     expect(mocks.setSidebarFavorites).not.toHaveBeenCalled()
   })
@@ -322,16 +322,16 @@ describe('LaunchpadPage', () => {
     expect(mocks.navigate).toHaveBeenCalledWith({ to: '/app/chat' })
   })
 
-  it('opens chat and agent apps fresh in the current tab', async () => {
+  it('A33 build: opens chat fresh in the current tab and offers no 智能体 tile', async () => {
     const user = userEvent.setup()
 
     render(<LaunchpadPage />)
 
     await user.click(screen.getByRole('button', { name: 'Chat' }))
-    await user.click(screen.getByRole('button', { name: 'Agent' }))
 
     expect(mocks.navigate).toHaveBeenCalledWith({ to: '/app/chat' })
-    expect(mocks.navigate).toHaveBeenCalledWith({ to: '/app/agents' })
+    // Agents are reached through the launcher's Codex / Claude, not the workspace.
+    expect(screen.queryByRole('button', { name: 'Agent' })).not.toBeInTheDocument()
   })
 
   it('navigates concrete mini apps inside the current launchpad tab', async () => {
