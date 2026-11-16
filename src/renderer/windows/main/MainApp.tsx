@@ -28,11 +28,15 @@ import { useIsPrivacyUpdateRequired } from '@renderer/hooks/useIsPrivacyUpdateRe
 import { useStorageMonitorNotification } from '@renderer/hooks/useStorageMonitorNotification'
 import { useWindowRuntime } from '@renderer/hooks/useWindowRuntime'
 import { registerImageModeChooser } from '@renderer/services/imageExportModeChooser'
+import { A33_LAUNCHER } from '@renderer/utils/a33'
 import { getSidebarDefaultLandingUrl } from '@renderer/utils/sidebar'
 import type { Tab } from '@shared/data/cache/cacheValueTypes'
 
 import { A33AutoSetup } from './a33/A33AutoSetup'
 import { A33KeyPrompt } from './a33/A33KeyPrompt'
+import { A33OnboardingSkip } from './a33/A33OnboardingSkip'
+import { A33ScreenView } from './a33/A33ScreenView'
+import { useA33Screen } from './a33/useA33Screen'
 import { useAppUpdateHandler } from './hooks/useAppUpdateHandler'
 import { useAutoBackupEvents } from './hooks/useAutoBackupEvents'
 import { useTopicNamingErrorNotification } from './hooks/useTopicNamingErrorNotification'
@@ -99,6 +103,10 @@ function MainWindowRuntime(): null {
 
 export function MainWindowContent(): React.ReactElement {
   const [providerSetupStatus] = usePreference('app.onboarding.provider_setup.status')
+  // A33 build: A33OnboardingSkip finishes onboarding; the launcher shows meanwhile.
+  const showOnboarding = providerSetupStatus === 'pending' && !A33_LAUNCHER
+  const a33Screen = useA33Screen()
+  const showShell = !A33_LAUNCHER || a33Screen.kind === 'workspace'
   const [sidebarShortcuts] = usePreference('ui.sidebar_shortcut')
   const [defaultPaintingProvider] = usePreference('feature.paintings.default_provider')
   const sidebarShortcutRegistry = useMemo(() => new SidebarShortcutRegistry(CORE_SIDEBAR_SHORTCUT_PROVIDERS), [])
@@ -122,15 +130,18 @@ export function MainWindowContent(): React.ReactElement {
     <TabsProvider initialDefaultTab={initialDefaultTab}>
       <SidebarShortcutRegistryProvider registry={sidebarShortcutRegistry}>
         <MandatoryGateProvider open={privacyGateOpen}>
-          {providerSetupStatus === 'pending' ? (
+          {showOnboarding ? (
             <Suspense fallback={<BootFallback />}>
               <OnboardingPage />
             </Suspense>
-          ) : (
+          ) : showShell ? (
             <AppShell />
+          ) : (
+            <A33ScreenView screen={a33Screen} />
           )}
           <MainWindowRuntime />
           <A33AutoSetup />
+          {A33_LAUNCHER && <A33OnboardingSkip />}
           <ConversationNotificationRuntime />
           <McpInteractionHost />
           <PopupHost />
@@ -138,7 +149,7 @@ export function MainWindowContent(): React.ReactElement {
           <DictationShortcutHost />
           <VoicePlaybackHost />
           {providerSetupStatus === 'pending' ? null : <PrivacyPolicyUpdateGate />}
-          {providerSetupStatus === 'pending' ? null : <A33KeyPrompt />}
+          {providerSetupStatus === 'pending' ? null : <A33KeyPrompt autoPrompt={showShell} />}
         </MandatoryGateProvider>
       </SidebarShortcutRegistryProvider>
     </TabsProvider>

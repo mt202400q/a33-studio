@@ -18,6 +18,7 @@ import { Route as AppCodeRouteImport } from './routes/app/code'
 import { Route as AppFilePreviewRouteImport } from './routes/app/file-preview'
 import { Route as AppFilesRouteImport } from './routes/app/files'
 import { Route as AppGalleryRouteImport } from './routes/app/gallery'
+import { Route as AppHomeRouteImport } from './routes/app/home'
 import { Route as AppImageRouteImport } from './routes/app/image'
 import { Route as AppKnowledgeRouteImport } from './routes/app/knowledge'
 import { Route as AppLaunchpadRouteImport } from './routes/app/launchpad'
@@ -119,6 +120,11 @@ const AppFilesRoute = AppFilesRouteImport.update({
 const AppGalleryRoute = AppGalleryRouteImport.update({
   id: '/gallery',
   path: '/gallery',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppHomeRoute = AppHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
   getParentRoute: () => AppRoute,
 } as any)
 const AppImageRoute = AppImageRouteImport.update({
@@ -422,6 +428,7 @@ export interface FileRoutesByFullPath {
   '/app/file-preview': typeof AppFilePreviewRoute
   '/app/files': typeof AppFilesRoute
   '/app/gallery': typeof AppGalleryRoute
+  '/app/home': typeof AppHomeRoute
   '/app/image': typeof AppImageRoute
   '/app/knowledge': typeof AppKnowledgeRoute
   '/app/launchpad': typeof AppLaunchpadRoute
@@ -489,6 +496,7 @@ export interface FileRoutesByTo {
   '/app/file-preview': typeof AppFilePreviewRoute
   '/app/files': typeof AppFilesRoute
   '/app/gallery': typeof AppGalleryRoute
+  '/app/home': typeof AppHomeRoute
   '/app/image': typeof AppImageRoute
   '/app/knowledge': typeof AppKnowledgeRoute
   '/app/launchpad': typeof AppLaunchpadRoute
@@ -555,6 +563,7 @@ export interface FileRoutesById {
   '/app/file-preview': typeof AppFilePreviewRoute
   '/app/files': typeof AppFilesRoute
   '/app/gallery': typeof AppGalleryRoute
+  '/app/home': typeof AppHomeRoute
   '/app/image': typeof AppImageRoute
   '/app/knowledge': typeof AppKnowledgeRoute
   '/app/launchpad': typeof AppLaunchpadRoute
@@ -625,6 +634,7 @@ export interface FileRouteTypes {
     | '/app/file-preview'
     | '/app/files'
     | '/app/gallery'
+    | '/app/home'
     | '/app/image'
     | '/app/knowledge'
     | '/app/launchpad'
@@ -692,6 +702,7 @@ export interface FileRouteTypes {
     | '/app/file-preview'
     | '/app/files'
     | '/app/gallery'
+    | '/app/home'
     | '/app/image'
     | '/app/knowledge'
     | '/app/launchpad'
@@ -757,6 +768,7 @@ export interface FileRouteTypes {
     | '/app/file-preview'
     | '/app/files'
     | '/app/gallery'
+    | '/app/home'
     | '/app/image'
     | '/app/knowledge'
     | '/app/launchpad'
@@ -884,6 +896,13 @@ declare module '@tanstack/react-router' {
       path: '/gallery'
       fullPath: '/app/gallery'
       preLoaderRoute: typeof AppGalleryRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/home': {
+      id: '/app/home'
+      path: '/home'
+      fullPath: '/app/home'
+      preLoaderRoute: typeof AppHomeRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/image': {
@@ -1296,6 +1315,7 @@ interface AppRouteChildren {
   AppFilePreviewRoute: typeof AppFilePreviewRoute
   AppFilesRoute: typeof AppFilesRoute
   AppGalleryRoute: typeof AppGalleryRoute
+  AppHomeRoute: typeof AppHomeRoute
   AppImageRoute: typeof AppImageRoute
   AppKnowledgeRoute: typeof AppKnowledgeRoute
   AppLaunchpadRoute: typeof AppLaunchpadRoute
@@ -1317,6 +1337,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppFilePreviewRoute: AppFilePreviewRoute,
   AppFilesRoute: AppFilesRoute,
   AppGalleryRoute: AppGalleryRoute,
+  AppHomeRoute: AppHomeRoute,
   AppImageRoute: AppImageRoute,
   AppKnowledgeRoute: AppKnowledgeRoute,
   AppLaunchpadRoute: AppLaunchpadRoute,

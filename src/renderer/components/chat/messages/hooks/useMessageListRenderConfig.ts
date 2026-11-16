@@ -1,9 +1,21 @@
-import { useCallback, useMemo } from 'react'
+import { createContext, use, useCallback, useMemo } from 'react'
 
 import { usePreference } from '@data/hooks/usePreference'
 import type { MessageRenderConfigUpdate } from '@renderer/components/chat/messages/types'
+import type { ChatMessageStyle } from '@shared/data/preference/preferenceTypes'
+
+export interface MessageRenderConfigOverride {
+  messageStyle?: ChatMessageStyle
+  messageFont?: string
+  fontSize?: number
+  narrowMode?: boolean
+}
+
+/** Lets a screen with its own look (A33 Codex / Claude skins) pin render settings instead of the user preferences. */
+export const MessageRenderConfigOverrideContext = createContext<MessageRenderConfigOverride | null>(null)
 
 export function useMessageListRenderConfig() {
+  const override = use(MessageRenderConfigOverrideContext)
   const [userName] = usePreference('app.user.name')
   const [narrowMode] = usePreference('chat.narrow_mode')
   const [messageStyle] = usePreference('chat.message.style')
@@ -39,9 +51,11 @@ export function useMessageListRenderConfig() {
       showEstimatedTokens,
       multiModelMessageStyle,
       multiModelGridColumns,
-      multiModelGridPopoverTrigger
+      multiModelGridPopoverTrigger,
+      ...override
     }),
     [
+      override,
       fontSize,
       codeFancyBlock,
       mathEnableSingleDollar,

@@ -4,6 +4,21 @@
  * merges remain cheap.
  */
 
+import type { Model } from '@shared/data/types/model'
+
+const modelKey = (model: Model) => model.apiModelId ?? model.id
+
+/** First matching pattern wins; within a pattern the highest version wins. */
+export function pickModel(models: readonly Model[], priority: readonly RegExp[]): Model | undefined {
+  for (const pattern of priority) {
+    const matches = models.filter((model) => pattern.test(modelKey(model)))
+    if (matches.length > 0) {
+      return [...matches].sort((a, b) => modelKey(b).localeCompare(modelKey(a), undefined, { numeric: true }))[0]
+    }
+  }
+  return undefined
+}
+
 /**
  * Sidebar / launchpad apps hidden in the A33 build. 高级生图 (paintings) is folded into 生图 and stays
  * reachable from the 生图 page's 高级模式 button for one release.
@@ -20,6 +35,23 @@ export const A33_HIDDEN_SETTINGS_ROUTES: ReadonlySet<string> = new Set([
   '/settings/channels',
   '/settings/device-connections'
 ])
+
+/** Login-based CLI providers hidden from Settings → 模型服务; still enabled in main to power agent runtimes. */
+export const A33_HIDDEN_SETTINGS_PROVIDER_IDS: ReadonlySet<string> = new Set([
+  'claude-code',
+  'openai-codex',
+  'grok-cli'
+])
+
+/**
+ * Providers 编码搭档 (code tools) may configure CLIs with. The built-in API gateway and the CLIs'
+ * own-login cards are hidden as well, so every CLI runs on the user's a33.club key.
+ */
+export const A33_CODE_TOOL_PROVIDER_IDS: ReadonlySet<string> = new Set(['a33'])
+export const A33_CODE_TOOLS_A33_ONLY = true
+
+/** The standalone launcher (with Codex / Claude screens) is the start screen and replaces the provider onboarding. */
+export const A33_LAUNCHER = true
 
 /** Cherry-hosted subscription, docs, release notes and feedback entry points. */
 export const A33_HIDE_CHERRY_SERVICES = true

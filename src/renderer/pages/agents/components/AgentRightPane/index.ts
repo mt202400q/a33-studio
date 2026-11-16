@@ -6,3 +6,4 @@ export {
   useOptionalAgentFileNavigation,
   useOptionalAgentRightPaneActions
 } from './AgentRightPane'
+export { type AgentStatusTask, buildAgentRightPaneStatus } from './agentRightPaneProjection'

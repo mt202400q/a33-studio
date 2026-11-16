@@ -6,6 +6,7 @@ import { useModels } from '@renderer/hooks/useModel'
 import { useProvider } from '@renderer/hooks/useProvider'
 import { supportsImageGenerationEndpoint } from '@renderer/pages/paintings/model/utils/paintingModelOptions'
 import { useProviderModelSync } from '@renderer/pages/settings/ProviderSettings'
+import { pickModel } from '@renderer/utils/a33'
 import type { Model } from '@shared/data/types/model'
 import { isNonChatModel } from '@shared/utils/model'
 
@@ -14,21 +15,9 @@ const logger = loggerService.withContext('A33AutoSetup')
 const A33_CHAT_PROVIDER_ID = 'a33'
 const A33_IMAGE_PROVIDER_ID = 'a33-image'
 
-// First matching pattern wins; within a pattern the highest version wins. Covers every a33.club text group.
+// Covers every a33.club text group.
 const CHAT_MODEL_PRIORITY = [/claude-sonnet/, /claude-opus/, /^gpt-/, /deepseek-v/, /glm-/, /kimi-/, /./]
 const FAST_MODEL_PRIORITY = [/claude-haiku/, /flash/, /mini|lite/, ...CHAT_MODEL_PRIORITY]
-
-const modelKey = (model: Model) => model.apiModelId ?? model.id
-
-function pickModel(models: readonly Model[], priority: readonly RegExp[]): Model | undefined {
-  for (const pattern of priority) {
-    const matches = models.filter((model) => pattern.test(modelKey(model)))
-    if (matches.length > 0) {
-      return [...matches].sort((a, b) => modelKey(b).localeCompare(modelKey(a), undefined, { numeric: true }))[0]
-    }
-  }
-  return undefined
-}
 
 /** Once the user has entered a key, enable the provider and pull its model list (runs once per session). */
 function useA33ProviderBootstrap(providerId: string): readonly Model[] {

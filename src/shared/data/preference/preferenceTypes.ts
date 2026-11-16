@@ -122,7 +122,8 @@ export const SIDEBAR_FAVORITES = [
   'openclaw',
   'gallery',
   'image_chat',
-  'video_chat'
+  'video_chat',
+  'home'
 ] as const
 
 export type SidebarFavorite = (typeof SIDEBAR_FAVORITES)[number]

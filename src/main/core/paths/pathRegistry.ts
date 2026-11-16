@@ -111,6 +111,8 @@ export function buildPathRegistry() {
     'feature.remote_access.identity_file': path.join(appUserDataRuntime, 'remote-identity.enc'),
     // Plaintext fallback (0600) used only when no OS key store is available
     'feature.remote_access.plain_identity_file': path.join(appUserDataRuntime, 'remote-identity.key'),
+    // A33 build: a33.club login session (access/refresh token), sealed with safeStorage
+    'feature.a33_account.session_file': path.join(appUserDataRuntime, 'a33-account-session.enc'),
 
     'feature.computer_use.runtime': app.isPackaged
       ? path.join(

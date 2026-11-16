@@ -38,6 +38,16 @@ describe('isProviderSettingsListVisibleProvider', () => {
     expect(isProviderSettingsListVisibleProvider(provider('cherryai'))).toBe(false)
   })
 
+  it('hides the login-based CLI providers in the A33 build', () => {
+    for (const id of ['claude-code', 'openai-codex', 'grok-cli']) {
+      expect(isProviderSettingsListVisibleProvider(provider(id))).toBe(false)
+    }
+  })
+
+  it('keeps the a33 provider visible', () => {
+    expect(isProviderSettingsListVisibleProvider(provider('a33'))).toBe(true)
+  })
+
   it('keeps a normal provider visible', () => {
     expect(isProviderSettingsListVisibleProvider(provider('openai'))).toBe(true)
   })

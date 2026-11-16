@@ -1,9 +1,10 @@
 import '@testing-library/jest-dom/vitest'
 import { MockUsePreferenceUtils } from '@test-mocks/renderer/usePreference'
-import { render, screen } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { showA33Screen } from '@renderer/utils/a33Screen'
 import { createSidebarShortcutId, type SidebarShortcutTarget } from '@shared/data/preference/preferenceTypes'
 
 const onboardingModule = vi.hoisted(() => ({ evaluations: 0 }))
@@ -14,6 +15,9 @@ vi.mock('../onboarding/OnboardingPage', () => {
 })
 
 vi.mock('../a33/A33AutoSetup', () => ({ A33AutoSetup: () => null }))
+vi.mock('../a33/A33ScreenView', () => ({
+  A33ScreenView: ({ screen }: { screen: { kind: string } }) => <div data-testid="a33-screen">{screen.kind}</div>
+}))
 vi.mock('../a33/A33KeyPrompt', () => ({ A33KeyPrompt: () => null }))
 vi.mock('../privacy/PrivacyPolicyUpdateGate', () => ({
   PrivacyPolicyUpdateGate: () => <div data-testid="privacy-policy-gate">privacy-policy-gate</div>
@@ -71,31 +75,44 @@ describe('MainWindowContent', () => {
     vi.clearAllMocks()
   })
 
-  it('does not load onboarding after first-run setup is completed or skipped', () => {
+  it('A33 build: every start opens the launcher, and the workspace shell only on request', () => {
     for (const status of ['completed', 'skipped'] as const) {
       MockUsePreferenceUtils.setPreferenceValue('app.onboarding.provider_setup.status', status)
 
       const view = render(<MainWindowContent />)
 
       expect(screen.getByTestId('tabs-provider')).toBeInTheDocument()
-      expect(screen.getByTestId('app-shell')).toBeInTheDocument()
+      expect(screen.getByTestId('a33-screen')).toHaveTextContent('launcher')
+      expect(screen.queryByTestId('app-shell')).not.toBeInTheDocument()
       expect(screen.queryByTestId('onboarding-page')).not.toBeInTheDocument()
       expect(screen.getByTestId('privacy-policy-gate')).toBeInTheDocument()
+
+      act(() => showA33Screen({ kind: 'workspace' }))
+      expect(screen.getByTestId('app-shell')).toBeInTheDocument()
+      expect(screen.queryByTestId('a33-screen')).not.toBeInTheDocument()
+
+      act(() => showA33Screen({ kind: 'agent', agent: 'claude' }))
+      expect(screen.getByTestId('a33-screen')).toHaveTextContent('agent')
       expect(onboardingModule.evaluations).toBe(0)
       view.unmount()
     }
   })
 
-  it('loads and renders onboarding before the user completes first-run setup', async () => {
+  it('A33 build: first run shows the launcher instead of onboarding and opts out of Cherry data collection', async () => {
     MockUsePreferenceUtils.setPreferenceValue('app.onboarding.provider_setup.status', 'pending')
+    MockUsePreferenceUtils.setPreferenceValue('app.privacy.data_collection.enabled', true)
     appendBootSpinner()
 
     render(<MainWindowContent />)
 
-    expect(await screen.findByTestId('onboarding-page')).toBeInTheDocument()
-    expect(onboardingModule.evaluations).toBe(1)
-    expect(screen.queryByTestId('app-shell')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('privacy-policy-gate')).not.toBeInTheDocument()
+    expect(screen.getByTestId('a33-screen')).toHaveTextContent('launcher')
+    expect(screen.queryByTestId('onboarding-page')).not.toBeInTheDocument()
+    expect(onboardingModule.evaluations).toBe(0)
+    await waitFor(() =>
+      expect(MockUsePreferenceUtils.getPreferenceValue('app.onboarding.provider_setup.status')).toBe('skipped')
+    )
+    expect(MockUsePreferenceUtils.getPreferenceValue('app.privacy.data_collection.enabled')).toBe(false)
+    expect(MockUsePreferenceUtils.getPreferenceValue('app.privacy.policy_version')).toBe('')
     expect(document.getElementById('spinner')).toBeNull()
   })
 

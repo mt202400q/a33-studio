@@ -215,7 +215,8 @@ const sidebarIconKeyMap = {
   notes: 'notes.title',
   gallery: 'a33.gallery.title',
   image_chat: 'a33.image_chat.title',
-  video_chat: 'a33.video_chat.title'
+  video_chat: 'a33.video_chat.title',
+  home: 'title.home'
 } as const
 
 export const getSidebarIconLabelKey = (key: string): string => {
@@ -238,7 +239,8 @@ const sidebarFavoriteKeyMap = {
   notes: 'notes.title',
   gallery: 'a33.gallery.title',
   image_chat: 'a33.image_chat.title',
-  video_chat: 'a33.video_chat.title'
+  video_chat: 'a33.video_chat.title',
+  home: 'title.home'
 } as const
 export const getSidebarFavoriteLabelKey = (key: string): string => {
   return getLabelKey(sidebarFavoriteKeyMap, key)

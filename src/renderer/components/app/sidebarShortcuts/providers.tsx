@@ -7,6 +7,7 @@ import { dataApiService } from '@renderer/data/DataApiService'
 import { preferenceService } from '@renderer/data/PreferenceService'
 import { getSidebarIconLabelKey } from '@renderer/i18n/label'
 import i18n from '@renderer/i18n/resolver'
+import { showA33Screen } from '@renderer/utils/a33Screen'
 import {
   resolveAgentEntrySessionIdForAgent,
   resolveChatEntryTopicIdForAssistant
@@ -131,6 +132,8 @@ const appProvider: SidebarShortcutProvider = {
   async activate(target, gateway) {
     if (!this.validate(target)) return
     const id = target.locator.resourceId
+    // A33 build: 首页 is the standalone launcher screen, not a tab.
+    if (id === 'home') return showA33Screen({ kind: 'launcher' })
     const defaultPaintingProvider =
       id === 'paintings' ? await preferenceService.get('feature.paintings.default_provider') : ''
     if (!isSidebarAppId(id)) return

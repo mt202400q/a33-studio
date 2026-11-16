@@ -52,7 +52,8 @@ const APP_ICON_SOURCES: Record<SidebarAppId, string> = {
   notes: notesIcon,
   gallery: galleryIcon,
   image_chat: paintingsIcon,
-  video_chat: paintingsIcon
+  video_chat: paintingsIcon,
+  home: agentsIcon
 }
 
 export default function LaunchpadPage() {

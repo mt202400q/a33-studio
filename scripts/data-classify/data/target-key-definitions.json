@@ -310,6 +310,11 @@
       "type": "PreferenceTypes.SidebarShortcutItem[]",
       "defaultValue": [
         {
+          "id": "sidebar-shortcut:core.app:home",
+          "target": { "kind": "resource", "locator": { "providerId": "core.app", "resourceId": "home" } },
+          "type": "shortcut"
+        },
+        {
           "id": "sidebar-shortcut:core.app:assistants",
           "target": { "kind": "resource", "locator": { "providerId": "core.app", "resourceId": "assistants" } },
           "type": "shortcut"

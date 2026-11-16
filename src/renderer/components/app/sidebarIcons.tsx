@@ -4,6 +4,7 @@ import {
   Code,
   FileSearch,
   Folder,
+  House,
   Languages,
   LayoutGrid,
   MessageSquare,
@@ -28,6 +29,7 @@ const CodeMateIcon: SidebarIconComponent = (props) => <Code {...props} viewBox="
  * components; the navigation data and logic live in `@renderer/utils/sidebar`.
  */
 export const SIDEBAR_ICON_COMPONENTS = {
+  home: House,
   assistants: MessageSquare,
   agents: MousePointerClick,
   paintings: Palette,

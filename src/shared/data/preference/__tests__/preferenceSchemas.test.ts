@@ -79,8 +79,9 @@ describe('DefaultPreferences', () => {
     ]
     expect(DefaultPreferences.default['ui.sidebar.favorites']).toEqual(legacyFavorites)
 
-    // A33 build: visible apps pinned common-first.
+    // A33 build: visible apps pinned common-first, the home page leading so startup lands on it.
     const sidebarShortcutsDefault: PreferenceSchemas['default']['ui.sidebar_shortcut'] = [
+      ['core.app', 'home'],
       ['core.app', 'assistants'],
       ['core.app', 'image_chat'],
       ['core.app', 'video_chat'],

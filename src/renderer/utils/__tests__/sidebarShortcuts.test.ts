@@ -83,4 +83,11 @@ describe('sidebar shortcut storage transforms', () => {
     expect(getSidebarDefaultLandingUrl(stored, 'openai')).toBe('/app/paintings/openai')
     expect(getSidebarDefaultLandingUrl([shortcut('core.mini-app', 'mini-1')], 'openai')).toBe('')
   })
+
+  it('A33 build: never lands on 首页, which opens the launcher screen rather than a tab', () => {
+    const stored = [shortcut('core.app', 'home'), shortcut('core.app', 'translate')]
+
+    expect(getSidebarDefaultLandingUrl(stored, 'openai')).toBe('/app/translate')
+    expect(getSidebarDefaultLandingUrl([shortcut('core.app', 'home')], 'openai')).toBe('')
+  })
 })

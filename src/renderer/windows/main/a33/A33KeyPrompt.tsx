@@ -32,9 +32,10 @@ const TEXT_BY_KIND = {
 
 /**
  * Opening a model-backed app with no usable model asks for an a33.club key; the A33 provider
- * already points at https://a33.club, and A33AutoSetup syncs models once the key lands.
+ * already points at https://a33.club, and A33AutoSetup syncs models once the key lands. Auto-opening is off outside
+ * the workspace (launcher / Codex / Claude screens), where only explicit requests open it.
  */
-export function A33KeyPrompt() {
+export function A33KeyPrompt({ autoPrompt = true }: { autoPrompt?: boolean }) {
   const { t } = useTranslation()
   const { activeTab } = useTabs()
   const { models: enabledModels, isLoading } = useModels({ enabled: true })
@@ -65,11 +66,11 @@ export function A33KeyPrompt() {
   const wantedHasModel = activeApp === 'paintings' ? hasImageModel : wanted === 'chat' ? hasChatModel : false
 
   useEffect(() => {
-    if (!wanted || kind || isLoading || wantedHasKey !== false || wantedHasModel) return
+    if (!autoPrompt || !wanted || kind || isLoading || wantedHasKey !== false || wantedHasModel) return
     if (dismissedRef.current.has(wanted)) return
     setApiKey('')
     setKind(wanted)
-  }, [wanted, kind, isLoading, wantedHasKey, wantedHasModel])
+  }, [autoPrompt, wanted, kind, isLoading, wantedHasKey, wantedHasModel])
 
   useEffect(() => {
     const onRequest = (event: Event) => {

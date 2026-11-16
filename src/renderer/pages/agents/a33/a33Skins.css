@@ -1,0 +1,139 @@
+/*
+ * A33 build: the Codex and Claude screens are themes. They re-point the public semantic
+ * variables inside their container, so shared components (message list, buttons, menus)
+ * pick up the skin palette without page-local colours.
+ */
+@layer app {
+  /* The launcher and the Codex / Claude screens scroll without a visible bar. */
+  .a33-hide-scrollbars,
+  .a33-hide-scrollbars * {
+    scrollbar-width: none;
+  }
+
+  .a33-hide-scrollbars::-webkit-scrollbar,
+  .a33-hide-scrollbars *::-webkit-scrollbar {
+    display: none;
+  }
+
+  /*
+   * Claude's late-2026 "new look" is more neutral than the old ivory theme. Its exact values are not
+   * published, so this is an approximation: near-white / charcoal greys, terracotta only as an accent.
+   */
+  .a33-skin-claude {
+    --background: #ffffff;
+    --background-subtle: #f8f8f7;
+    --foreground: #1f1f1e;
+    --muted: #f3f3f2;
+    --muted-foreground: #6e6e6a;
+    --foreground-tertiary: #95958f;
+    --card: #ffffff;
+    --card-foreground: #1f1f1e;
+    --popover: #ffffff;
+    --popover-foreground: #1f1f1e;
+    --primary: #d97757;
+    --primary-foreground: #ffffff;
+    --secondary: #f3f3f2;
+    --secondary-foreground: #1f1f1e;
+    --accent: #efefed;
+    --accent-foreground: #1f1f1e;
+    --border: #e6e6e3;
+    --border-subtle: #eeeeec;
+    --border-strong: #d4d4d0;
+    --input: #dededa;
+    --ring: #d97757;
+    --sidebar: #f8f8f7;
+    --sidebar-foreground: #3a3a38;
+    --sidebar-accent: #eeeeec;
+    --sidebar-accent-foreground: #1f1f1e;
+    --sidebar-border: #ececea;
+  }
+
+  .dark .a33-skin-claude,
+  .dark.a33-skin-claude {
+    --background: #1f1f1f;
+    --background-subtle: #181818;
+    --foreground: #ececea;
+    --muted: #2a2a2a;
+    --muted-foreground: #a3a39f;
+    --foreground-tertiary: #7d7d79;
+    --card: #2a2a2a;
+    --card-foreground: #ececea;
+    --popover: #2a2a2a;
+    --popover-foreground: #ececea;
+    --primary: #d97757;
+    --primary-foreground: #ffffff;
+    --secondary: #2a2a2a;
+    --secondary-foreground: #ececea;
+    --accent: #303030;
+    --accent-foreground: #ececea;
+    --border: #353535;
+    --border-subtle: #2c2c2c;
+    --border-strong: #444444;
+    --input: #3d3d3d;
+    --ring: #d97757;
+    --sidebar: #181818;
+    --sidebar-foreground: #c4c4c0;
+    --sidebar-accent: #2a2a2a;
+    --sidebar-accent-foreground: #ececea;
+    --sidebar-border: #262626;
+  }
+
+  .a33-skin-codex {
+    --background: #ffffff;
+    --background-subtle: #f9f9f9;
+    --foreground: #0d0d0d;
+    --muted: #f3f3f3;
+    --muted-foreground: #5d5d5d;
+    --foreground-tertiary: #8f8f8f;
+    --card: #ffffff;
+    --card-foreground: #0d0d0d;
+    --popover: #ffffff;
+    --popover-foreground: #0d0d0d;
+    --primary: #0d0d0d;
+    --primary-foreground: #ffffff;
+    --secondary: #f3f3f3;
+    --secondary-foreground: #0d0d0d;
+    --accent: #ececec;
+    --accent-foreground: #0d0d0d;
+    --border: #e5e5e5;
+    --border-subtle: #efefef;
+    --border-strong: #d4d4d4;
+    --input: #e0e0e0;
+    --ring: #8f8f8f;
+    --sidebar: #f9f9f9;
+    --sidebar-foreground: #3c3c3c;
+    --sidebar-accent: #ececec;
+    --sidebar-accent-foreground: #0d0d0d;
+    --sidebar-border: #ececec;
+  }
+
+  .dark .a33-skin-codex,
+  .dark.a33-skin-codex {
+    --background: #181818;
+    --background-subtle: #1f1f1f;
+    --foreground: #ececec;
+    --muted: #2a2a2a;
+    --muted-foreground: #9b9b9b;
+    --foreground-tertiary: #7a7a7a;
+    --card: #212121;
+    --card-foreground: #ececec;
+    --popover: #262626;
+    --popover-foreground: #ececec;
+    --primary: #ececec;
+    --primary-foreground: #0d0d0d;
+    --secondary: #2a2a2a;
+    --secondary-foreground: #ececec;
+    --accent: #2c2c2c;
+    --accent-foreground: #ececec;
+    --border: #2e2e2e;
+    --border-subtle: #262626;
+    --border-strong: #3a3a3a;
+    --input: #333333;
+    --ring: #6b6b6b;
+    --sidebar: #1f1f1f;
+    --sidebar-foreground: #c8c8c8;
+    --sidebar-accent: #2a2a2a;
+    --sidebar-accent-foreground: #ececec;
+    --sidebar-border: #262626;
+  }
+}

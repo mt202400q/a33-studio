@@ -54,6 +54,10 @@ function getConversationSearchParamFromUrl(url: string, name: string): string | 
  */
 const SIDEBAR_APP_DEFINITIONS = [
   {
+    id: 'home',
+    routePrefix: '/app/home'
+  },
+  {
     id: 'agents',
     routePrefix: '/app/agents',
     conversationRoute: {
@@ -311,7 +315,8 @@ export function getSidebarDefaultLandingUrl(
   values: readonly unknown[] | undefined,
   defaultPaintingProvider: string
 ): string {
-  const firstApp = getVisibleSidebarAppIds(values)[0]
+  // A33 build: 首页 opens the launcher screen, so it is never a landing tab.
+  const firstApp = getVisibleSidebarAppIds(values).find((id) => id !== 'home')
   return firstApp ? getSidebarMenuPath(firstApp, defaultPaintingProvider) : ''
 }
 
@@ -406,7 +411,8 @@ export function getOrderedLaunchpadApps(stored: readonly string[] | undefined): 
     }
   }
 
-  return ordered
+  // A33 build: 首页 is the launcher screen, reached from the sidebar rather than a launchpad tile.
+  return ordered.filter((id) => id !== 'home')
 }
 
 /**
