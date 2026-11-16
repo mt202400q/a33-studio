@@ -7,7 +7,6 @@ vi.mock('@renderer/i18n/resolver', () => ({
       const translations: Record<string, string> = {
         'common.chat': '聊天',
         'agent.session.group.conversation': '对话',
-        'agent.sidebar_title': '任务',
         'agent.sidebar_title': '智能体',
         'title.paintings': '绘画',
         'title.translate': '翻译',
